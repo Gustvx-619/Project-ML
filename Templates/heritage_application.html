@@ -1,799 +1,105 @@
 {% extends "layout.html" %}
-{% block title %}Metodología CRISP-ML — PatrimonioCO{% endblock %}
-
-{% block extra_head %}
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<style>
-:root {
-  --ink:      #1c1c2e;
-  --violet:   #6f42c1;
-  --violet-lt:#9b59b6;
-  --gold:     #e8b04b;
-  --rose:     #c0392b;
-  --surface:  #f4f1fb;
-  --card-bg:  #ffffff;
-  --border:   rgba(111,66,193,0.15);
-  --text:     #2d2d3a;
-  --muted:    #6b6b80;
-}
-
-/* ── Reset body bg to match dark aesthetic ── */
-body { background: var(--surface); }
-
-/* ════════════════════════════════════════
-   HERO
-════════════════════════════════════════ */
-.crisp-hero {
-  background: var(--ink);
-  padding: 5rem 0 4rem;
-  position: relative;
-  overflow: hidden;
-}
-.crisp-hero::before {
-  content:'';
-  position:absolute; inset:0;
-  background: radial-gradient(ellipse 80% 60% at 70% 50%, rgba(111,66,193,.35) 0%, transparent 70%),
-              radial-gradient(ellipse 40% 40% at 20% 80%, rgba(232,176,75,.12) 0%, transparent 60%);
-}
-.crisp-hero .container { position:relative; z-index:1; }
-.hero-eyebrow {
-  font-family:'DM Mono', monospace;
-  font-size:.75rem; letter-spacing:.15em; text-transform:uppercase;
-  color: var(--gold); margin-bottom:1rem;
-}
-.hero-title {
-  font-family:'Cormorant Garamond', serif;
-  font-size: clamp(2.2rem,5vw,3.8rem);
-  font-weight:700; color:#fff; line-height:1.1;
-  margin-bottom:1.25rem;
-}
-.hero-title em { color: var(--gold); font-style:italic; }
-.hero-sub {
-  font-size:1rem; color:rgba(255,255,255,.65);
-  max-width:640px; line-height:1.7;
-}
-
-/* ── stat pills in hero ── */
-.stat-strip {
-  display:flex; flex-wrap:wrap; gap:.75rem;
-  margin-top:2.5rem;
-}
-.stat-pill {
-  background: rgba(255,255,255,.06);
-  border: 1px solid rgba(255,255,255,.12);
-  border-radius:999px; padding:.45rem 1.1rem;
-  display:flex; align-items:center; gap:.5rem;
-}
-.stat-pill .num {
-  font-family:'DM Mono',monospace;
-  font-size:1rem; font-weight:500; color:var(--gold);
-}
-.stat-pill .lbl {
-  font-size:.78rem; color:rgba(255,255,255,.6);
-}
-
-/* ════════════════════════════════════════
-   SECTION WRAPPER
-════════════════════════════════════════ */
-.phase-section {
-  padding: 5rem 0;
-  border-top: 1px solid var(--border);
-}
-.phase-section:nth-child(even) { background: #fff; }
-
-.phase-num {
-  font-family:'DM Mono',monospace;
-  font-size:.7rem; letter-spacing:.18em; text-transform:uppercase;
-  color: var(--violet-lt); margin-bottom:.4rem;
-}
-.phase-title {
-  font-family:'Cormorant Garamond',serif;
-  font-size: clamp(1.8rem,3.5vw,2.6rem);
-  font-weight:700; color: var(--violet);
-  line-height:1.15; margin-bottom:1rem;
-}
-.phase-body {
-  font-size:.95rem; color: var(--muted);
-  line-height:1.75; max-width:560px;
-}
-
-/* ── Feature cards ── */
-.feat-card {
-  background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius:14px;
-  padding:1.5rem 1.5rem 1.5rem 1.25rem;
-  display:flex; gap:1rem; align-items:flex-start;
-  transition: transform .2s, box-shadow .2s;
-}
-.feat-card:hover {
-  transform:translateY(-3px);
-  box-shadow: 0 8px 28px rgba(111,66,193,.12);
-}
-.feat-icon {
-  width:42px; height:42px; flex-shrink:0;
-  background: linear-gradient(135deg,var(--violet),var(--violet-lt));
-  border-radius:10px;
-  display:flex; align-items:center; justify-content:center;
-  color:#fff; font-size:1.1rem;
-}
-.feat-name {
-  font-family:'Cormorant Garamond',serif;
-  font-size:1.05rem; font-weight:600; color:var(--text);
-  margin-bottom:.25rem;
-}
-.feat-desc { font-size:.85rem; color:var(--muted); line-height:1.6; }
-
-/* ── Phase alt: dark bg ── */
-.phase-dark {
-  background: var(--ink) !important;
-  border-top: none;
-}
-.phase-dark .phase-title { color: var(--gold); }
-.phase-dark .phase-num   { color: rgba(255,255,255,.45); }
-.phase-dark .phase-body  { color: rgba(255,255,255,.6); }
-.phase-dark .feat-card   {
-  background: rgba(255,255,255,.05);
-  border-color: rgba(255,255,255,.1);
-}
-.phase-dark .feat-name   { color:#fff; }
-.phase-dark .feat-desc   { color:rgba(255,255,255,.55); }
-
-/* ── Dataset section ── */
-.ds-section {
-  background: linear-gradient(135deg, var(--ink) 0%, #2d1b69 100%);
-  padding: 5rem 0;
-}
-.ds-title {
-  font-family:'Cormorant Garamond',serif;
-  font-size:clamp(1.8rem,3vw,2.5rem); font-weight:700;
-  color:#fff; margin-bottom:.5rem;
-}
-.ds-sub { color:rgba(255,255,255,.55); font-size:.9rem; margin-bottom:2.5rem; }
-
-.kpi-grid {
-  display:grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap:1rem; margin-bottom:2.5rem;
-}
-.kpi-card {
-  background: rgba(255,255,255,.07);
-  border:1px solid rgba(255,255,255,.1);
-  border-radius:12px; padding:1.25rem 1rem;
-  text-align:center;
-  transition: background .2s;
-}
-.kpi-card:hover { background: rgba(255,255,255,.11); }
-.kpi-val {
-  font-family:'DM Mono',monospace;
-  font-size:1.9rem; font-weight:500; color:var(--gold);
-  line-height:1;
-}
-.kpi-label { font-size:.75rem; color:rgba(255,255,255,.5); margin-top:.4rem; text-transform:uppercase; letter-spacing:.08em; }
-
-/* bar chart */
-.bar-row { margin-bottom:1rem; }
-.bar-label { font-size:.82rem; color:rgba(255,255,255,.7); margin-bottom:.3rem; display:flex; justify-content:space-between; }
-.bar-track { background:rgba(255,255,255,.08); border-radius:999px; height:8px; overflow:hidden; }
-.bar-fill { height:100%; border-radius:999px; background: linear-gradient(90deg,var(--violet),var(--gold)); transition:width 1s ease; }
-
-.donut-row {
-  display:flex; align-items:center; gap:1.5rem;
-  background:rgba(255,255,255,.05); border-radius:14px; padding:1.25rem;
-}
-.donut-legend { flex:1; }
-.legend-item { display:flex; align-items:center; gap:.6rem; margin-bottom:.6rem; font-size:.85rem; color:rgba(255,255,255,.7); }
-.legend-dot { width:10px;height:10px;border-radius:50%;flex-shrink:0; }
-
-/* ── Timeline (Ciclo) ── */
-.timeline {
-  position:relative; padding-left:2.5rem;
-}
-.timeline::before {
-  content:''; position:absolute; left:.85rem; top:0; bottom:0;
-  width:2px; background: linear-gradient(180deg,var(--violet),var(--gold));
-  border-radius:2px;
-}
-.tl-item { position:relative; margin-bottom:2rem; }
-.tl-dot {
-  position:absolute; left:-1.85rem; top:.2rem;
-  width:14px; height:14px; border-radius:50%;
-  background: var(--violet);
-  border:2px solid #fff;
-  box-shadow:0 0 0 3px rgba(111,66,193,.3);
-}
-.tl-dot.gold { background:var(--gold); box-shadow:0 0 0 3px rgba(232,176,75,.3); }
-.tl-phase {
-  font-family:'DM Mono',monospace;
-  font-size:.7rem; text-transform:uppercase; letter-spacing:.12em;
-  color:var(--violet-lt); margin-bottom:.2rem;
-}
-.tl-name {
-  font-family:'Cormorant Garamond',serif;
-  font-size:1.15rem; font-weight:600; color:var(--text); margin-bottom:.3rem;
-}
-.tl-desc { font-size:.85rem; color:var(--muted); line-height:1.6; }
-
-/* ── References ── */
-.ref-section { background:#fff; padding:4rem 0; border-top:1px solid var(--border); }
-.ref-card {
-  border:1px solid var(--border); border-radius:12px; padding:1.25rem 1.5rem;
-  display:flex; gap:1rem; align-items:flex-start;
-  transition:box-shadow .2s;
-}
-.ref-card:hover { box-shadow:0 4px 20px rgba(111,66,193,.1); }
-.ref-num {
-  font-family:'DM Mono',monospace; font-size:.85rem;
-  color:var(--violet); flex-shrink:0; min-width:30px;
-}
-.ref-author { font-weight:600; font-size:.9rem; color:var(--text); }
-.ref-title  { font-size:.85rem; color:var(--muted); margin-top:.15rem; font-style:italic; }
-
-/* ── Fade-in animation ── */
-.fade-up { opacity:0; transform:translateY(24px); transition:opacity .6s ease, transform .6s ease; }
-.fade-up.visible { opacity:1; transform:none; }
-
-/* Stagger delays */
-.delay-1{transition-delay:.1s} .delay-2{transition-delay:.2s}
-.delay-3{transition-delay:.3s} .delay-4{transition-delay:.4s}
-</style>
-{% endblock %}
+{% block title %}Predicción Deterioro Patrimonial - CRISP-ML{% endblock %}
 
 {% block content %}
 
-<!-- ══════════════════ HERO ══════════════════ -->
-<section class="crisp-hero">
-  <div class="container">
-    <p class="hero-eyebrow"><i class="bi bi-diagram-3 me-1"></i>Metodología CRISP-ML</p>
-    <h1 class="hero-title">
-      Predicción de Deterioro del<br>
-      <em>Patrimonio Arquitectónico</em><br>
-      Colombiano
-    </h1>
-    <p class="hero-sub">
-      Aplicación de las 6 fases de CRISP-ML al análisis de 1.200 Bienes de Interés Cultural
-      (BIC) utilizando variables ambientales, climáticas y urbanísticas abiertas.
-    </p>
-    <div class="stat-strip">
-      <div class="stat-pill"><span class="num">1.200</span><span class="lbl">registros BIC</span></div>
-      <div class="stat-pill"><span class="num">10</span><span class="lbl">ciudades</span></div>
-      <div class="stat-pill"><span class="num">6</span><span class="lbl">materiales</span></div>
-      <div class="stat-pill"><span class="num">150.7</span><span class="lbl">años prom.</span></div>
-      <div class="stat-pill"><span class="num">6</span><span class="lbl">fases CRISP-ML</span></div>
+<section class="py-5 text-white" style="background: linear-gradient(135deg, #6f42c1, #9b59b6);">
+    <div class="container py-4 text-center">
+        <h1 class="fw-bold">Predicción de Deterioro del Patrimonio Arquitectónico Colombiano</h1>
+        <p class="lead">Aplicación práctica de la metodología CRISP-ML</p>
     </div>
-  </div>
 </section>
 
-<!-- ══════════════════ CICLO CRISP-ML ══════════════════ -->
-<section class="phase-section">
-  <div class="container">
-    <div class="row align-items-center g-5">
-      <div class="col-lg-5 fade-up">
-        <p class="phase-num">Visión General</p>
-        <h2 class="phase-title">¿Qué es CRISP-ML?</h2>
-        <p class="phase-body">
-          CRISP-ML es una evolución del modelo CRISP-DM, adaptada específicamente para proyectos
-          de Machine Learning moderno. Establece fases iterativas, bien definidas y orientadas a
-          resultados de negocio. A diferencia de su predecesor, enfatiza la integración del modelo
-          en sistemas reales y su monitoreo posterior — aspectos fundamentales en el ciclo de vida
-          de soluciones de inteligencia artificial actuales.
-        </p>
-        <p class="phase-body mt-3">
-          <strong style="color:var(--violet)">Schmid, Wurst &amp; Wirth (2020)</strong> proponen
-          esta estructura para desarrollar soluciones de ML que generen valor empresarial sostenible.
-        </p>
-      </div>
-      <div class="col-lg-7 fade-up delay-2">
-        <div class="timeline">
-          <div class="tl-item">
-            <div class="tl-dot"></div>
-            <div class="tl-phase">Fase 1</div>
-            <div class="tl-name">Entendimiento del Negocio y los Datos</div>
-            <div class="tl-desc">Alinear los objetivos técnicos con las necesidades del sector patrimonial colombiano.</div>
-          </div>
-          <div class="tl-item">
-            <div class="tl-dot"></div>
-            <div class="tl-phase">Fase 2</div>
-            <div class="tl-name">Ingeniería de Datos</div>
-            <div class="tl-desc">Selección, limpieza, transformación y documentación del dataset de 1.200 BIC.</div>
-          </div>
-          <div class="tl-item">
-            <div class="tl-dot"></div>
-            <div class="tl-phase">Fase 3</div>
-            <div class="tl-name">Ingeniería del Modelo</div>
-            <div class="tl-desc">Selección de algoritmos, entrenamiento, ajuste de hiperparámetros y validación.</div>
-          </div>
-          <div class="tl-item">
-            <div class="tl-dot"></div>
-            <div class="tl-phase">Fase 4</div>
-            <div class="tl-name">Evaluación del Modelo</div>
-            <div class="tl-desc">Métricas de desempeño, validación cruzada, análisis de riesgos y revisión con expertos.</div>
-          </div>
-          <div class="tl-item">
-            <div class="tl-dot"></div>
-            <div class="tl-phase">Fase 5</div>
-            <div class="tl-name">Despliegue del Modelo</div>
-            <div class="tl-desc">Implementación en producción, documentación técnica y establecimiento de protocolos.</div>
-          </div>
-          <div class="tl-item">
-            <div class="tl-dot gold"></div>
-            <div class="tl-phase">Fase 6</div>
-            <div class="tl-name">Monitoreo y Mantenimiento</div>
-            <div class="tl-desc">Supervisión continua, detección de degradación y actualización periódica del modelo.</div>
-          </div>
+<section class="py-5">
+    <div class="container">
+
+        <!-- 1. Entendimiento del Negocio y los Datos -->
+        <h2 class="text-center mb-4" style="color: #6f42c1;">Entendimiento del Negocio y los Datos</h2>
+        <div class="row g-4 mb-5">
+            <div class="col-md-3">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5><strong>Objetivos de Negocio</strong></h5>
+                        <p>Optimizar el presupuesto estatal pasando de mantenimiento correctivo a preventivo en bienes de interés cultural.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5><strong>Preguntas Clave</strong></h5>
+                        <p>¿Qué factores aceleran el deterioro? ¿Cómo influyen material, contaminación y vibraciones?</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5><strong>Evaluación de Datos</strong></h5>
+                        <p>Dataset con 1.200 registros de BIC de Colombia.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5><strong>Análisis de Viabilidad</strong></h5>
+                        <p>Alta viabilidad técnica usando datos abiertos.</p>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
+
+        <!-- 2. Ingeniería de Datos -->
+        <h2 class="text-center mb-4" style="color: #6f42c1;">Ingeniería de Datos</h2>
+        <div class="row g-4 mb-5 text-center">
+            <div class="col-md-3"><div class="card h-100 shadow-sm"><div class="card-body"><h5>Selección</h5><p>Fuentes abiertas</p></div></div></div>
+            <div class="col-md-3"><div class="card h-100 shadow-sm"><div class="card-body"><h5>Limpieza</h5><p>Manejo de outliers y valores faltantes</p></div></div></div>
+            <div class="col-md-3"><div class="card h-100 shadow-sm"><div class="card-body"><h5>Transformación</h5><p>Feature Engineering y Normalización</p></div></div></div>
+            <div class="col-md-3"><div class="card h-100 shadow-sm"><div class="card-body"><h5>Documentación</h5><p>Registro completo del proceso</p></div></div></div>
+        </div>
+
+        <!-- Prueba del Modelo -->
+        <h2 class="text-center mb-4" style="color: #6f42c1;">Prueba el Modelo</h2>
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <form method="POST" class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Edad Estructura (años)</label>
+                                <input type="number" name="edad" class="form-control" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Material Principal</label>
+                                <select name="material" class="form-select" required>
+                                    <option value="Piedra_Ladrillo">Piedra Ladrillo</option>
+                                    <option value="Adobe_Tapia">Adobe / Tapia</option>
+                                    <option value="Mamposteria">Mampostería</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Precipitación Anual (mm)</label>
+                                <input type="number" name="precipitacion" class="form-control" required>
+                            </div>
+                            <div class="col-12 mt-3">
+                                <button type="submit" class="btn btn-primary btn-lg w-100">
+                                    Predecir Nivel de Riesgo
+                                </button>
+                            </div>
+                        </form>
+
+                        {% if prediction %}
+                        <div class="alert alert-success mt-4 text-center fs-4">
+                            <strong>Riesgo Estimado: {{ prediction }}</strong>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
-  </div>
 </section>
 
-<!-- ══════════════════ FASE 1 ══════════════════ -->
-<section class="phase-section" style="background:#fff">
-  <div class="container">
-    <div class="row g-5 align-items-center">
-      <div class="col-lg-4 fade-up">
-        <p class="phase-num">Fase 1</p>
-        <h2 class="phase-title">Entendimiento del Negocio y los Datos</h2>
-        <p class="phase-body">
-          Esta fase inicial garantiza que el esfuerzo técnico esté alineado con las necesidades
-          reales del sector. El objetivo es optimizar el presupuesto estatal permitiendo a
-          entidades como <strong>MinCultura</strong> o el <strong>IDPC</strong> pasar de un
-          mantenimiento correctivo (altamente costoso) a uno preventivo, prediciendo qué
-          edificaciones están en riesgo inminente.
-        </p>
-      </div>
-      <div class="col-lg-8">
-        <div class="row g-3">
-          <div class="col-md-6 fade-up delay-1">
-            <div class="feat-card">
-              <div class="feat-icon"><i class="bi bi-bullseye"></i></div>
-              <div>
-                <div class="feat-name">Objetivos de Negocio</div>
-                <div class="feat-desc">Optimizar el presupuesto estatal pasando de mantenimiento correctivo a preventivo en bienes de interés cultural colombianos.</div>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-6 fade-up delay-2">
-            <div class="feat-card">
-              <div class="feat-icon"><i class="bi bi-question-circle"></i></div>
-              <div>
-                <div class="feat-name">Preguntas Clave</div>
-                <div class="feat-desc">¿Qué combinación de material y PM10 acelera el deterioro? ¿Cómo influye la cercanía a vías en estructuras de más de 200 años?</div>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-6 fade-up delay-3">
-            <div class="feat-card">
-              <div class="feat-icon"><i class="bi bi-database-check"></i></div>
-              <div>
-                <div class="feat-name">Evaluación de Datos</div>
-                <div class="feat-desc">Dataset de 1.200 registros BIC cruzando variables históricas (edad), climáticas (humedad y precipitación) y urbanísticas (PM10 y distancia a vías).</div>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-6 fade-up delay-4">
-            <div class="feat-card">
-              <div class="feat-icon"><i class="bi bi-check2-circle"></i></div>
-              <div>
-                <div class="feat-name">Análisis de Viabilidad</div>
-                <div class="feat-desc">Alta viabilidad técnica con datos abiertos de IDEAM, OpenStreetMap y Datos Abiertos Colombia. Riesgo principal: actualización catastral en municipios pequeños.</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ══════════════════ FASE 2 ══════════════════ -->
-<section class="phase-section phase-dark">
-  <div class="container">
-    <div class="row g-5 align-items-center">
-      <div class="col-lg-8 order-lg-1 order-2">
-        <div class="row g-3">
-          <div class="col-md-6 fade-up delay-1">
-            <div class="feat-card">
-              <div class="feat-icon"><i class="bi bi-funnel"></i></div>
-              <div>
-                <div class="feat-name">Selección</div>
-                <div class="feat-desc">Integración de diccionarios climáticos regionales (IDEAM) y listados de BIC (MinCultura) como fuentes de datos primarias.</div>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-6 fade-up delay-2">
-            <div class="feat-card">
-              <div class="feat-icon"><i class="bi bi-shield-check"></i></div>
-              <div>
-                <div class="feat-name">Limpieza</div>
-                <div class="feat-desc">Reglas lógicas estrictas: humedad ≤ 100%, edad entre 50–450 años, y ausencia total de valores nulos (NaN) en los 1.200 registros.</div>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-6 fade-up delay-3">
-            <div class="feat-card">
-              <div class="feat-icon"><i class="bi bi-gear"></i></div>
-              <div>
-                <div class="feat-name">Transformación</div>
-                <div class="feat-desc">Feature Engineering (índice lluvia ácida), One-Hot Encoding para Ciudad y Material, y normalización Min-Max / Standard Scaler para variables de amplio rango.</div>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-6 fade-up delay-4">
-            <div class="feat-card">
-              <div class="feat-icon"><i class="bi bi-file-earmark-text"></i></div>
-              <div>
-                <div class="feat-name">Documentación</div>
-                <div class="feat-desc">Registro de todas las transformaciones, lógica del cálculo del nivel de riesgo y semilla aleatoria para garantizar total reproducibilidad.</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-lg-4 order-lg-2 order-1 fade-up">
-        <p class="phase-num">Fase 2</p>
-        <h2 class="phase-title">Ingeniería de Datos</h2>
-        <p class="phase-body">
-          Esta fase prepara adecuadamente los datos para maximizar su potencial predictivo y
-          minimizar riesgos de sesgo o sobreajuste. Según <strong style="color:rgba(255,255,255,.85)">ML-Ops.org</strong>,
-          todas las transformaciones y decisiones deben documentarse para garantizar la
-          reproducibilidad del proceso.
-        </p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ══════════════════ DATASET STATS ══════════════════ -->
-<section class="ds-section fade-up">
-  <div class="container">
-    <p class="phase-num" style="color:rgba(255,255,255,.4)">Dataset</p>
-    <h2 class="ds-title">Estadísticas del Dataset</h2>
-    <p class="ds-sub">1.200 registros de Bienes de Interés Cultural — Colombia</p>
-
-    <div class="kpi-grid">
-      <div class="kpi-card"><div class="kpi-val">1.200</div><div class="kpi-label">Registros</div></div>
-      <div class="kpi-card"><div class="kpi-val">10</div><div class="kpi-label">Ciudades</div></div>
-      <div class="kpi-card"><div class="kpi-val">8</div><div class="kpi-label">Departamentos</div></div>
-      <div class="kpi-card"><div class="kpi-val">150.7</div><div class="kpi-label">Edad prom. (años)</div></div>
-      <div class="kpi-card"><div class="kpi-val">1202</div><div class="kpi-label">Precipit. prom. (mm)</div></div>
-      <div class="kpi-card"><div class="kpi-val">73.4%</div><div class="kpi-label">Humedad prom.</div></div>
-      <div class="kpi-card"><div class="kpi-val">32.4</div><div class="kpi-label">PM10 prom. (μg/m³)</div></div>
-      <div class="kpi-card"><div class="kpi-val">96.5m</div><div class="kpi-label">Dist. vía prom.</div></div>
-    </div>
-
-    <div class="row g-4">
-      <!-- Distribución de deterioro -->
-      <div class="col-lg-6 fade-up delay-1">
-        <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:1.5rem;">
-          <h6 style="color:#fff;font-family:'Cormorant Garamond',serif;font-size:1.1rem;margin-bottom:1.25rem;">
-            <i class="bi bi-bar-chart me-2" style="color:var(--gold)"></i>Distribución Nivel de Deterioro
-          </h6>
-          <div class="bar-row">
-            <div class="bar-label"><span>Bajo</span><span style="color:var(--gold)">713 (59.4%)</span></div>
-            <div class="bar-track"><div class="bar-fill" style="width:59.4%"></div></div>
-          </div>
-          <div class="bar-row">
-            <div class="bar-label"><span>Medio</span><span style="color:var(--gold)">469 (39.1%)</span></div>
-            <div class="bar-track"><div class="bar-fill" style="width:39.1%"></div></div>
-          </div>
-          <div class="bar-row">
-            <div class="bar-label"><span>Alto</span><span style="color:var(--gold)">18 (1.5%)</span></div>
-            <div class="bar-track"><div class="bar-fill" style="width:1.5%"></div></div>
-          </div>
-        </div>
-      </div>
-      <!-- Materiales -->
-      <div class="col-lg-6 fade-up delay-2">
-        <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:1.5rem;">
-          <h6 style="color:#fff;font-family:'Cormorant Garamond',serif;font-size:1.1rem;margin-bottom:1.25rem;">
-            <i class="bi bi-layers me-2" style="color:var(--gold)"></i>Materiales Principales
-          </h6>
-          <div class="bar-row">
-            <div class="bar-label"><span>Piedra Coralina</span><span style="color:var(--gold)">219 (18.3%)</span></div>
-            <div class="bar-track"><div class="bar-fill" style="width:18.3%"></div></div>
-          </div>
-          <div class="bar-row">
-            <div class="bar-label"><span>Ladrillo</span><span style="color:var(--gold)">211 (17.6%)</span></div>
-            <div class="bar-track"><div class="bar-fill" style="width:17.6%"></div></div>
-          </div>
-          <div class="bar-row">
-            <div class="bar-label"><span>Adobe / Tapia</span><span style="color:var(--gold)">196 (16.3%)</span></div>
-            <div class="bar-track"><div class="bar-fill" style="width:16.3%"></div></div>
-          </div>
-          <div class="bar-row">
-            <div class="bar-label"><span>Mampostería</span><span style="color:var(--gold)">192 (16.0%)</span></div>
-            <div class="bar-track"><div class="bar-fill" style="width:16.0%"></div></div>
-          </div>
-          <div class="bar-row">
-            <div class="bar-label"><span>Piedra Concreto</span><span style="color:var(--gold)">192 (16.0%)</span></div>
-            <div class="bar-track"><div class="bar-fill" style="width:16.0%"></div></div>
-          </div>
-          <div class="bar-row">
-            <div class="bar-label"><span>Piedra Ladrillo</span><span style="color:var(--gold)">190 (15.8%)</span></div>
-            <div class="bar-track"><div class="bar-fill" style="width:15.8%"></div></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ══════════════════ FASE 3 ══════════════════ -->
-<section class="phase-section" style="background:#fff">
-  <div class="container">
-    <div class="row g-5 align-items-center">
-      <div class="col-lg-4 fade-up">
-        <p class="phase-num">Fase 3</p>
-        <h2 class="phase-title">Ingeniería del Modelo</h2>
-        <p class="phase-body">
-          Se seleccionan los algoritmos más adecuados según la naturaleza del problema y las
-          características del dataset. <strong>Schmid et al. (2020)</strong> destacan la
-          importancia de incorporar el conocimiento de expertos de dominio en esta fase.
-          La documentación detallada facilita futuras auditorías y garantiza la transparencia
-          del modelo.
-        </p>
-      </div>
-      <div class="col-lg-8">
-        <div class="row g-3">
-          <div class="col-md-6 fade-up delay-1">
-            <div class="feat-card">
-              <div class="feat-icon"><i class="bi bi-code-slash"></i></div>
-              <div>
-                <div class="feat-name">Selección de Algoritmos</div>
-                <div class="feat-desc">Elección de técnicas adecuadas según el tipo de problema (clasificación multiclase) y las características del dataset patrimonial.</div>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-6 fade-up delay-2">
-            <div class="feat-card">
-              <div class="feat-icon"><i class="bi bi-cpu"></i></div>
-              <div>
-                <div class="feat-name">Entrenamiento</div>
-                <div class="feat-desc">Aplicación de los datos preparados al algoritmo seleccionado, respetando la semilla aleatoria para reproducibilidad.</div>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-6 fade-up delay-3">
-            <div class="feat-card">
-              <div class="feat-icon"><i class="bi bi-sliders"></i></div>
-              <div>
-                <div class="feat-name">Ajuste de Hiperparámetros</div>
-                <div class="feat-desc">Optimización de las configuraciones del modelo para mejorar el rendimiento predictivo sobre los niveles de deterioro.</div>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-6 fade-up delay-4">
-            <div class="feat-card">
-              <div class="feat-icon"><i class="bi bi-check-circle"></i></div>
-              <div>
-                <div class="feat-name">Validación</div>
-                <div class="feat-desc">Verificación del desempeño con datos no utilizados en entrenamiento para asegurar la capacidad de generalización.</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ══════════════════ FASE 4 ══════════════════ -->
-<section class="phase-section phase-dark">
-  <div class="container">
-    <div class="row g-5 align-items-center">
-      <div class="col-lg-8 order-lg-1 order-2">
-        <div class="row g-3">
-          <div class="col-md-6 fade-up delay-1">
-            <div class="feat-card">
-              <div class="feat-icon"><i class="bi bi-graph-up-arrow"></i></div>
-              <div>
-                <div class="feat-name">Métricas de Desempeño</div>
-                <div class="feat-desc">Selección de indicadores apropiados para clasificación multiclase: accuracy, F1-score ponderado, matriz de confusión y AUC-ROC.</div>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-6 fade-up delay-2">
-            <div class="feat-card">
-              <div class="feat-icon"><i class="bi bi-grid-3x3"></i></div>
-              <div>
-                <div class="feat-name">Validación Cruzada</div>
-                <div class="feat-desc">K-Fold Cross Validation para evaluar la capacidad de generalización del modelo con diferentes subconjuntos del dataset.</div>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-6 fade-up delay-3">
-            <div class="feat-card">
-              <div class="feat-icon"><i class="bi bi-exclamation-triangle"></i></div>
-              <div>
-                <div class="feat-name">Análisis de Riesgos</div>
-                <div class="feat-desc">Identificación de sobreajuste, subajuste y sesgos potenciales, especialmente dado el desbalance de clases (Alto: 1.5%).</div>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-6 fade-up delay-4">
-            <div class="feat-card">
-              <div class="feat-icon"><i class="bi bi-person-check"></i></div>
-              <div>
-                <div class="feat-name">Revisión con Expertos</div>
-                <div class="feat-desc">Validación de resultados con especialistas en conservación patrimonial para asegurar la relevancia práctica del modelo.</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-lg-4 order-lg-2 order-1 fade-up">
-        <p class="phase-num">Fase 4</p>
-        <h2 class="phase-title">Evaluación del Modelo</h2>
-        <p class="phase-body">
-          Según <strong style="color:rgba(255,255,255,.85)">KDnuggets (2025)</strong>, la
-          evaluación rigurosa es esencial para garantizar la fiabilidad en entornos reales.
-          Esta fase determina si el modelo cumple con los estándares de calidad y está
-          listo para su implementación en las entidades del sector patrimonial.
-        </p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ══════════════════ FASE 5 ══════════════════ -->
-<section class="phase-section" style="background:#fff">
-  <div class="container">
-    <div class="row g-5 align-items-center">
-      <div class="col-lg-4 fade-up">
-        <p class="phase-num">Fase 5</p>
-        <h2 class="phase-title">Despliegue del Modelo</h2>
-        <p class="phase-body">
-          El modelo validado se implementa en el entorno de producción y se integra con los
-          sistemas existentes. <strong>ML-Ops.org</strong> destaca que es fundamental contar
-          con mecanismos robustos para recolectar retroalimentación y detectar posibles
-          incidencias en el funcionamiento del sistema.
-        </p>
-      </div>
-      <div class="col-lg-8">
-        <div class="row g-3">
-          <div class="col-md-4 fade-up delay-1">
-            <div class="feat-card h-100">
-              <div class="feat-icon"><i class="bi bi-cloud-upload"></i></div>
-              <div>
-                <div class="feat-name">Implementación en Producción</div>
-                <div class="feat-desc">Integración del modelo validado en el entorno operativo real, asegurando compatibilidad con sistemas existentes y optimizando recursos computacionales.</div>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-4 fade-up delay-2">
-            <div class="feat-card h-100">
-              <div class="feat-icon"><i class="bi bi-book"></i></div>
-              <div>
-                <div class="feat-name">Documentación y Capacitación</div>
-                <div class="feat-desc">Elaboración de manuales técnicos y de usuario, junto con sesiones de formación para el personal que interactuará con el sistema.</div>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-4 fade-up delay-3">
-            <div class="feat-card h-100">
-              <div class="feat-icon"><i class="bi bi-diagram-2"></i></div>
-              <div>
-                <div class="feat-name">Establecimiento de Protocolos</div>
-                <div class="feat-desc">Definición de procedimientos para el monitoreo continuo, gestión de incidencias y recolección de retroalimentación de usuarios finales.</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ══════════════════ FASE 6 ══════════════════ -->
-<section class="phase-section phase-dark">
-  <div class="container">
-    <div class="row g-5 align-items-center">
-      <div class="col-lg-8 order-lg-1 order-2">
-        <div class="row g-3">
-          <div class="col-md-6 fade-up delay-1">
-            <div class="feat-card">
-              <div class="feat-icon"><i class="bi bi-eye"></i></div>
-              <div>
-                <div class="feat-name">Supervisión Continua</div>
-                <div class="feat-desc">Monitoreo regular del desempeño del modelo en producción, verificando que mantiene los niveles de precisión esperados sobre nuevos datos.</div>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-6 fade-up delay-2">
-            <div class="feat-card">
-              <div class="feat-icon"><i class="bi bi-activity"></i></div>
-              <div>
-                <div class="feat-name">Detección de Degradación</div>
-                <div class="feat-desc">Identificación temprana de "drift" o deterioro en el rendimiento debido a cambios en los datos o en el entorno patrimonial.</div>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-6 fade-up delay-3">
-            <div class="feat-card">
-              <div class="feat-icon"><i class="bi bi-arrow-repeat"></i></div>
-              <div>
-                <div class="feat-name">Actualización del Modelo</div>
-                <div class="feat-desc">Reentrenamiento periódico con nuevos datos de BIC o ajustes en parámetros para mantener la efectividad del sistema.</div>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-6 fade-up delay-4">
-            <div class="feat-card">
-              <div class="feat-icon"><i class="bi bi-shield-half"></i></div>
-              <div>
-                <div class="feat-name">Revisión de Riesgos</div>
-                <div class="feat-desc">Evaluación continua de vulnerabilidades y adaptación de controles de calidad según evoluciona el contexto del patrimonio colombiano.</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-lg-4 order-lg-2 order-1 fade-up">
-        <p class="phase-num">Fase 6</p>
-        <h2 class="phase-title">Monitoreo y Mantenimiento</h2>
-        <p class="phase-body">
-          <strong style="color:rgba(255,255,255,.85)">Schmid et al. (2020)</strong> enfatizan
-          que esta es una fase continua orientada a asegurar la calidad y robustez del sistema
-          a lo largo del tiempo. Garantiza que el modelo siga proporcionando valor a medida
-          que evolucionan los datos y el contexto empresarial.
-        </p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ══════════════════ REFERENCIAS ══════════════════ -->
-<section class="ref-section">
-  <div class="container">
-    <p class="phase-num" style="color:var(--violet-lt)">Bibliografía</p>
-    <h2 class="phase-title mb-4">Referencias Bibliográficas</h2>
-    <div class="row g-3" style="max-width:780px">
-      <div class="col-12 fade-up delay-1">
-        <div class="ref-card">
-          <div class="ref-num">[1]</div>
-          <div>
-            <div class="ref-author">KDnuggets (2025)</div>
-            <div class="ref-title">The Machine Learning Lifecycle</div>
-          </div>
-        </div>
-      </div>
-      <div class="col-12 fade-up delay-2">
-        <div class="ref-card">
-          <div class="ref-num">[2]</div>
-          <div>
-            <div class="ref-author">ML-Ops.org (s.f.)</div>
-            <div class="ref-title">CRISP-ML(Q): The ML Lifecycle Process</div>
-          </div>
-        </div>
-      </div>
-      <div class="col-12 fade-up delay-3">
-        <div class="ref-card">
-          <div class="ref-num">[3]</div>
-          <div>
-            <div class="ref-author">Schmid, Wurst &amp; Wirth (2020)</div>
-            <div class="ref-title">Towards CRISP-ML(Q): A Machine Learning Process Model with Quality Assurance Methodology</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-{% endblock %}
-
-{% block extra_scripts %}
-<script>
-// Intersection Observer para fade-up
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      e.target.classList.add('visible');
-      observer.unobserve(e.target);
-    }
-  });
-}, { threshold: 0.1 });
-
-document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
-</script>
 {% endblock %}
