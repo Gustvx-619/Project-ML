@@ -62,38 +62,90 @@
         <!-- Prueba del Modelo -->
         <h2 class="text-center mb-4" style="color: #6f42c1;">Prueba el Modelo</h2>
         <div class="row justify-content-center">
-            <div class="col-lg-8">
+            <div class="col-lg-10">
                 <div class="card shadow">
-                    <div class="card-body">
+                    <div class="card-body p-4">
                         <form method="POST" class="row g-3">
+
                             <div class="col-md-4">
-                                <label class="form-label">Edad Estructura (años)</label>
-                                <input type="number" name="edad" class="form-control" required>
+                                <label class="form-label fw-semibold">Edad Estructura (años)</label>
+                                <input type="number" name="edad" class="form-control"
+                                       placeholder="Ej: 150" min="1" max="500"
+                                       value="{{ form_data.get('edad', '') }}" required>
+                                <div class="form-text">Entre 50 y 450 años</div>
                             </div>
+
                             <div class="col-md-4">
-                                <label class="form-label">Material Principal</label>
+                                <label class="form-label fw-semibold">Material Principal</label>
                                 <select name="material" class="form-select" required>
-                                    <option value="Piedra_Ladrillo">Piedra Ladrillo</option>
-                                    <option value="Adobe_Tapia">Adobe / Tapia</option>
-                                    <option value="Mamposteria">Mampostería</option>
+                                    <option value="" disabled {% if not form_data.get('material') %}selected{% endif %}>Selecciona...</option>
+                                    <option value="Piedra_Ladrillo"  {% if form_data.get('material') == 'Piedra_Ladrillo'  %}selected{% endif %}>Piedra Ladrillo</option>
+                                    <option value="Piedra_Coralina"  {% if form_data.get('material') == 'Piedra_Coralina'  %}selected{% endif %}>Piedra Coralina</option>
+                                    <option value="Piedra_Concreto"  {% if form_data.get('material') == 'Piedra_Concreto'  %}selected{% endif %}>Piedra Concreto</option>
+                                    <option value="Adobe_Tapia"      {% if form_data.get('material') == 'Adobe_Tapia'      %}selected{% endif %}>Adobe / Tapia</option>
+                                    <option value="Mamposteria"      {% if form_data.get('material') == 'Mamposteria'      %}selected{% endif %}>Mampostería</option>
+                                    <option value="Ladrillo"         {% if form_data.get('material') == 'Ladrillo'         %}selected{% endif %}>Ladrillo</option>
                                 </select>
                             </div>
+
                             <div class="col-md-4">
-                                <label class="form-label">Precipitación Anual (mm)</label>
-                                <input type="number" name="precipitacion" class="form-control" required>
+                                <label class="form-label fw-semibold">Precipitación Anual (mm)</label>
+                                <input type="number" name="precipitacion" class="form-control"
+                                       placeholder="Ej: 1200" min="0" max="5000"
+                                       value="{{ form_data.get('precipitacion', '') }}" required>
+                                <div class="form-text">Promedio anual en mm</div>
                             </div>
-                            <div class="col-12 mt-3">
-                                <button type="submit" class="btn btn-primary btn-lg w-100">
-                                    Predecir Nivel de Riesgo
+
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Humedad Relativa (%)</label>
+                                <input type="number" name="humedad" class="form-control"
+                                       placeholder="Ej: 75" min="0" max="100" step="0.1"
+                                       value="{{ form_data.get('humedad', '') }}" required>
+                                <div class="form-text">Porcentaje promedio anual</div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">PM10 (μg/m³)</label>
+                                <input type="number" name="pm10" class="form-control"
+                                       placeholder="Ej: 35" min="0" max="500" step="0.1"
+                                       value="{{ form_data.get('pm10', '') }}" required>
+                                <div class="form-text">Material particulado promedio</div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Distancia a Vía Principal (m)</label>
+                                <input type="number" name="distancia_via" class="form-control"
+                                       placeholder="Ej: 80" min="0" max="1000" step="0.1"
+                                       value="{{ form_data.get('distancia_via', '') }}" required>
+                                <div class="form-text">Metros a la vía más cercana</div>
+                            </div>
+
+                            <div class="col-12 mt-2">
+                                <button type="submit" class="btn btn-primary btn-lg w-100"
+                                        style="background: linear-gradient(135deg,#6f42c1,#9b59b6); border:none;">
+                                    <i class="bi bi-cpu me-2"></i>Predecir Nivel de Riesgo
                                 </button>
                             </div>
+
                         </form>
 
                         {% if prediction %}
-                        <div class="alert alert-success mt-4 text-center fs-4">
-                            <strong>Riesgo Estimado: {{ prediction }}</strong>
+                        <div class="mt-4 p-4 rounded-3 text-center
+                            {% if prediction == 'Alto' %}bg-danger text-white
+                            {% elif prediction == 'Medio' %}bg-warning
+                            {% else %}bg-success text-white{% endif %}">
+                            <h4 class="mb-1">Nivel de Riesgo Estimado</h4>
+                            <div style="font-size:2.5rem; font-weight:700;">{{ prediction }}</div>
+                            {% if prediction == 'Alto' %}
+                            <p class="mb-0 mt-2">⚠️ Requiere intervención urgente</p>
+                            {% elif prediction == 'Medio' %}
+                            <p class="mb-0 mt-2">🔶 Se recomienda mantenimiento preventivo</p>
+                            {% else %}
+                            <p class="mb-0 mt-2">✅ Estado estable, monitoreo periódico</p>
+                            {% endif %}
                         </div>
                         {% endif %}
+
                     </div>
                 </div>
             </div>
