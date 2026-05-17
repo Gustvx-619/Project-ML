@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Patrimonio Arquitectónico{% endblock %}</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary:   #6f42c1;
+            --secondary: #9b59b6;
+            --accent:    #e8b04b;
+            --dark:      #1a1a2e;
+            --light-bg:  #f8f5ff;
+            --text-muted-custom: #6c757d;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background-color: var(--light-bg);
+            color: #2d2d2d;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1, h2, h3, h4, h5 {
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* ── NAVBAR ── */
+        .navbar {
+            background: var(--dark);
+            padding: 1rem 0;
+            border-bottom: 3px solid var(--accent);
+        }
+
+        .navbar-brand {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            color: #fff !important;
+            letter-spacing: 0.5px;
+        }
+
+        .navbar-brand span {
+            color: var(--accent);
+        }
+
+        .nav-link {
+            color: rgba(255,255,255,0.8) !important;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover {
+            color: var(--accent) !important;
+        }
+
+        .navbar-toggler {
+            border-color: rgba(255,255,255,0.3);
+        }
+
+        .navbar-toggler-icon {
+            filter: invert(1);
+        }
+
+        /* ── MAIN CONTENT ── */
+        main {
+            flex: 1;
+        }
+
+        /* ── FOOTER ── */
+        footer {
+            background: var(--dark);
+            color: rgba(255,255,255,0.6);
+            font-size: 0.85rem;
+            padding: 1.5rem 0;
+            text-align: center;
+            border-top: 3px solid var(--accent);
+        }
+
+        footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* ── CARDS ── */
+        .card {
+            border: none;
+            border-radius: 12px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(111,66,193,0.15) !important;
+        }
+
+        /* ── BUTTONS ── */
+        .btn-primary {
+            background: var(--primary);
+            border-color: var(--primary);
+            font-weight: 500;
+            letter-spacing: 0.3px;
+        }
+
+        .btn-primary:hover {
+            background: var(--secondary);
+            border-color: var(--secondary);
+        }
+
+        /* ── HERO GRADIENT ── */
+        .hero-gradient {
+            background: linear-gradient(135deg, var(--dark) 0%, var(--primary) 100%);
+        }
+    </style>
+
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="bi bi-building me-2"></i>Patrimonio<span>CO</span>
+            </a>
+            <button class="navbar-toggler" type="button"
+                    data-bs-toggle="collapse" data-bs-target="#navbarMain">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarMain">
+                <ul class="navbar-nav ms-auto gap-2">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/"><i class="bi bi-house me-1"></i>Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/crisp-ml">
+                            <i class="bi bi-diagram-3 me-1"></i>CRISP-ML
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/heritage-application">
+                            <i class="bi bi-cpu me-1"></i>Predicción
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="container">
+            <p class="mb-1">
+                <strong style="color:#fff;">PatrimonioCO</strong> &mdash;
+                Predicción de Deterioro del Patrimonio Arquitectónico Colombiano
+            </p>
+            <p class="mb-0">
+                Metodología <a href="#">CRISP-ML</a> &nbsp;|&nbsp;
+                Dataset: 1.200 BIC de Colombia &nbsp;|&nbsp;
+                &copy; {{ 2026 }}
+            </p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>
