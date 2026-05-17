@@ -1,7 +1,7 @@
 import pandas as pd
 import os
 
-DATA_PATH = os.path.join(os.path.dirname(__file__), "dataset_patrimonio_colombia_1200.csv")
+DATA_PATH = os.path.join(os.path.dirname(__file__), "data", "dataset_patrimonio_colombia_1200.csv")
 
 def _load_data():
     df = pd.read_csv(DATA_PATH)
