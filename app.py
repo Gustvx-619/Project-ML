@@ -6,7 +6,12 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    return redirect(url_for('heritage_application'))
+    return render_template("crisp_ml.html")
+
+
+@app.route('/crisp-ml')
+def crisp_ml():
+    return render_template("crisp_ml.html")
 
 
 @app.route('/heritage-application', methods=["GET", "POST"])
@@ -25,7 +30,6 @@ def heritage_application():
                 "pm10": float(request.form.get("pm10")),
                 "distancia_via": float(request.form.get("distancia_via")),
             }
-
             prediction = HeritageModel.predict_deterioration_risk(
                 form_data["edad"],
                 form_data["material"],
@@ -42,11 +46,6 @@ def heritage_application():
                            model_info=model_info,
                            prediction=prediction,
                            form_data=form_data)
-
-
-@app.route('/crisp-ml')
-def crisp_ml():
-    return render_template("crisp_ml.html")
 
 
 if __name__ == '__main__':

@@ -25,215 +25,214 @@
         --muted:     #7a7890;
         --dim:       #3a3850;
     }
-
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    html { scroll-behavior: smooth; }
-
+    html { scroll-behavior: smooth; scroll-padding-top: 70px; }
     body {
         font-family: 'Outfit', sans-serif;
         background: var(--bg);
         color: var(--text);
         min-height: 100vh;
-        display: flex;
-        flex-direction: column;
+        display: flex; flex-direction: column;
         -webkit-font-smoothing: antialiased;
     }
-
-    /* ─── Noise texture overlay ─── */
     body::before {
         content: '';
         position: fixed; inset: 0; z-index: 0;
         background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-        background-size: 150px;
-        pointer-events: none;
-        opacity: .4;
+        background-size: 150px; pointer-events: none; opacity: .4;
     }
-
     body > * { position: relative; z-index: 1; }
 
     /* ─── NAVBAR ─── */
     .site-nav {
-        background: rgba(10,10,15,0.85);
+        background: rgba(10,10,15,0.88);
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
         border-bottom: 1px solid var(--border);
-        padding: .9rem 0;
+        padding: .75rem 0;
         position: sticky; top: 0; z-index: 1000;
     }
-
     .nav-brand {
         font-family: 'Cormorant Garamond', serif;
-        font-size: 1.45rem;
-        font-weight: 600;
-        color: var(--text) !important;
-        text-decoration: none;
+        font-size: 1.4rem; font-weight: 600;
+        color: var(--text) !important; text-decoration: none;
         letter-spacing: .02em;
         display: flex; align-items: center; gap: .5rem;
     }
     .nav-brand .brand-icon {
-        width: 32px; height: 32px;
+        width: 30px; height: 30px;
         background: linear-gradient(135deg, var(--violet), var(--gold));
-        border-radius: 8px;
+        border-radius: 7px;
         display: flex; align-items: center; justify-content: center;
-        font-size: .9rem;
+        font-size: .85rem;
     }
     .nav-brand em { color: var(--gold); font-style: normal; }
 
+    /* Dropdown styling */
+    .navbar-nav .nav-item.dropdown .nav-link,
     .navbar-nav .nav-link {
         font-family: 'DM Mono', monospace;
-        font-size: .72rem;
-        letter-spacing: .12em;
-        text-transform: uppercase;
+        font-size: .68rem; letter-spacing: .12em; text-transform: uppercase;
         color: var(--muted) !important;
-        padding: .4rem .9rem !important;
-        border-radius: 6px;
-        border: 1px solid transparent;
+        padding: .38rem .85rem !important;
+        border-radius: 6px; border: 1px solid transparent;
         transition: all .2s;
     }
     .navbar-nav .nav-link:hover,
-    .navbar-nav .nav-link.active {
+    .navbar-nav .nav-link.active,
+    .navbar-nav .nav-item.dropdown:hover > .nav-link {
         color: var(--violet-lt) !important;
         border-color: var(--border);
         background: rgba(138,99,210,.08);
     }
-
+    .dropdown-menu {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: .4rem;
+        margin-top: .4rem !important;
+        min-width: 200px;
+    }
+    .dropdown-item {
+        font-family: 'DM Mono', monospace;
+        font-size: .68rem; letter-spacing: .1em; text-transform: uppercase;
+        color: var(--muted);
+        border-radius: 6px;
+        padding: .5rem .85rem;
+        transition: all .15s;
+        display: flex; align-items: center; gap: .5rem;
+    }
+    .dropdown-item:hover {
+        background: rgba(138,99,210,.12);
+        color: var(--violet-lt);
+    }
+    .dropdown-divider { border-color: var(--border); margin: .3rem 0; }
     .navbar-toggler { border-color: var(--border); }
     .navbar-toggler-icon { filter: invert(.7); }
 
-    /* ─── MAIN ─── */
+    /* ─── MAIN & FOOTER ─── */
     main { flex: 1; }
-
-    /* ─── FOOTER ─── */
     .site-footer {
         background: var(--surface);
         border-top: 1px solid var(--border);
-        padding: 2rem 0;
-        text-align: center;
+        padding: 1.75rem 0; text-align: center;
     }
     .site-footer .footer-brand {
         font-family: 'Cormorant Garamond', serif;
-        font-size: 1.1rem; font-weight: 600;
-        color: var(--text); margin-bottom: .4rem;
+        font-size: 1.05rem; font-weight: 600; color: var(--text); margin-bottom: .35rem;
     }
     .site-footer p {
         font-family: 'DM Mono', monospace;
-        font-size: .7rem; letter-spacing: .08em;
-        color: var(--muted);
+        font-size: .68rem; letter-spacing: .07em; color: var(--muted);
     }
     .site-footer a { color: var(--gold); text-decoration: none; }
     .site-footer a:hover { color: var(--gold-lt); }
 
-    /* ─── SHARED COMPONENTS ─── */
+    /* ─── SHARED ─── */
     .eyebrow {
         font-family: 'DM Mono', monospace;
-        font-size: .68rem; letter-spacing: .2em;
-        text-transform: uppercase; color: var(--gold);
-        margin-bottom: .6rem;
+        font-size: .67rem; letter-spacing: .2em; text-transform: uppercase;
+        color: var(--gold); margin-bottom: .55rem;
     }
     .section-title {
         font-family: 'Cormorant Garamond', serif;
         font-size: clamp(1.9rem, 3.5vw, 2.8rem);
-        font-weight: 600; line-height: 1.15;
-        color: var(--text);
+        font-weight: 600; line-height: 1.15; color: var(--text);
     }
     .section-title em { color: var(--violet-lt); font-style: italic; }
-
     .glass-card {
-        background: var(--surface2);
-        border: 1px solid var(--border);
-        border-radius: 14px;
-        padding: 1.5rem;
-        transition: border-color .25s, transform .25s, box-shadow .25s;
+        background: var(--surface2); border: 1px solid var(--border); border-radius: 14px;
+        padding: 1.5rem; transition: border-color .25s, transform .25s, box-shadow .25s;
     }
     .glass-card:hover {
-        border-color: rgba(138,99,210,.45);
-        transform: translateY(-3px);
+        border-color: rgba(138,99,210,.45); transform: translateY(-3px);
         box-shadow: 0 12px 40px rgba(0,0,0,.4), 0 0 0 1px rgba(138,99,210,.15);
     }
-
     .icon-box {
         width: 44px; height: 44px; flex-shrink: 0;
         background: linear-gradient(135deg, rgba(138,99,210,.25), rgba(201,168,76,.15));
-        border: 1px solid var(--border);
-        border-radius: 10px;
+        border: 1px solid var(--border); border-radius: 10px;
         display: flex; align-items: center; justify-content: center;
         color: var(--violet-lt); font-size: 1.1rem;
     }
-
     .card-label {
-        font-family: 'DM Mono', monospace;
-        font-size: .7rem; letter-spacing: .1em;
-        text-transform: uppercase; color: var(--gold);
-        margin-bottom: .3rem;
+        font-family: 'DM Mono', monospace; font-size: .68rem; letter-spacing: .1em;
+        text-transform: uppercase; color: var(--gold); margin-bottom: .3rem;
     }
     .card-title {
-        font-family: 'Cormorant Garamond', serif;
-        font-size: 1.1rem; font-weight: 600;
-        color: var(--text); margin-bottom: .35rem;
+        font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; font-weight: 600;
+        color: var(--text); margin-bottom: .3rem;
     }
-    .card-body-text {
-        font-size: .85rem; color: var(--muted); line-height: 1.65;
-    }
-
-    /* fade-up animation */
+    .card-body-text { font-size: .84rem; color: var(--muted); line-height: 1.65; }
     .fade-up { opacity: 0; transform: translateY(20px); transition: opacity .55s ease, transform .55s ease; }
     .fade-up.visible { opacity: 1; transform: none; }
     .d1{transition-delay:.08s}.d2{transition-delay:.16s}.d3{transition-delay:.24s}.d4{transition-delay:.32s}
-
-    /* divider line */
-    .divider {
-        height: 1px;
-        background: linear-gradient(90deg, transparent, var(--violet), var(--gold), transparent);
-        border: none; margin: 0;
-    }
+    .divider { height:1px; background:linear-gradient(90deg,transparent,var(--violet),var(--gold),transparent); border:none; margin:0; }
     </style>
-
     {% block extra_head %}{% endblock %}
 </head>
 <body>
 
 <nav class="site-nav navbar navbar-expand-lg">
-    <div class="container">
-        <a class="nav-brand" href="/">
-            <div class="brand-icon"><i class="bi bi-buildings"></i></div>
-            Patrimonio<em>CO</em>
-        </a>
-        <button class="navbar-toggler" type="button"
-                data-bs-toggle="collapse" data-bs-target="#navMain">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navMain">
-            <ul class="navbar-nav ms-auto gap-1">
-                <li class="nav-item">
-                    <a class="nav-link" href="/"><i class="bi bi-house me-1"></i>Inicio</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/crisp-ml"><i class="bi bi-diagram-3 me-1"></i>CRISP-ML</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/heritage-application"><i class="bi bi-cpu me-1"></i>Predicción</a>
-                </li>
-            </ul>
-        </div>
+  <div class="container">
+    <a class="nav-brand" href="/"><div class="brand-icon"><i class="bi bi-buildings"></i></div>Patrimonio<em>CO</em></a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navMain">
+      <ul class="navbar-nav ms-auto gap-1 align-items-lg-center">
+
+        <!-- Inicio -->
+        <li class="nav-item">
+          <a class="nav-link" href="/"><i class="bi bi-house me-1"></i>Inicio</a>
+        </li>
+
+        <!-- CRISP-ML con dropdown de secciones -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="/crisp-ml" role="button"
+             data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-diagram-3 me-1"></i>CRISP-ML
+          </a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="/crisp-ml#fase-1"><i class="bi bi-dot"></i>F1 · Entendimiento</a></li>
+            <li><a class="dropdown-item" href="/crisp-ml#fase-2"><i class="bi bi-dot"></i>F2 · Ing. de Datos</a></li>
+            <li><a class="dropdown-item" href="/crisp-ml#dataset"><i class="bi bi-dot"></i>Dataset</a></li>
+            <li><a class="dropdown-item" href="/crisp-ml#fase-3"><i class="bi bi-dot"></i>F3 · Ing. del Modelo</a></li>
+            <li><a class="dropdown-item" href="/crisp-ml#fase-4"><i class="bi bi-dot"></i>F4 · Evaluación</a></li>
+            <li><a class="dropdown-item" href="/crisp-ml#fase-5"><i class="bi bi-dot"></i>F5 · Despliegue</a></li>
+            <li><a class="dropdown-item" href="/crisp-ml#fase-6"><i class="bi bi-dot"></i>F6 · Monitoreo</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="/crisp-ml#referencias"><i class="bi bi-book me-1"></i>Referencias</a></li>
+          </ul>
+        </li>
+
+        <!-- Predicción -->
+        <li class="nav-item">
+          <a class="nav-link" href="/heritage-application"><i class="bi bi-cpu me-1"></i>Predicción</a>
+        </li>
+
+      </ul>
     </div>
+  </div>
 </nav>
 
 <main>{% block content %}{% endblock %}</main>
 
 <hr class="divider">
 <footer class="site-footer">
-    <div class="container">
-        <div class="footer-brand"><i class="bi bi-buildings me-2"></i>PatrimonioCO</div>
-        <p>Predicción de Deterioro del Patrimonio Arquitectónico Colombiano &nbsp;·&nbsp;
-           Metodología <a href="/crisp-ml">CRISP-ML</a> &nbsp;·&nbsp;
-           Dataset 1.200 BIC &nbsp;·&nbsp; © 2026</p>
-    </div>
+  <div class="container">
+    <div class="footer-brand"><i class="bi bi-buildings me-2"></i>PatrimonioCO</div>
+    <p>Predicción de Deterioro del Patrimonio Arquitectónico Colombiano &nbsp;·&nbsp;
+       Metodología <a href="/crisp-ml">CRISP-ML</a> &nbsp;·&nbsp;
+       Dataset 1.200 BIC &nbsp;·&nbsp; © 2026</p>
+  </div>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-const obs = new IntersectionObserver(e => e.forEach(x => { if(x.isIntersecting){ x.target.classList.add('visible'); obs.unobserve(x.target); }}), {threshold:.1});
+const obs = new IntersectionObserver(e => e.forEach(x => {
+  if(x.isIntersecting){ x.target.classList.add('visible'); obs.unobserve(x.target); }
+}), {threshold:.1});
 document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
 </script>
 {% block extra_scripts %}{% endblock %}
