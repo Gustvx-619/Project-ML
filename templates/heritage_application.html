@@ -1,157 +1,316 @@
 {% extends "layout.html" %}
-{% block title %}Predicción Deterioro Patrimonial - CRISP-ML{% endblock %}
+{% block title %}Predicción de Deterioro — PatrimonioCO{% endblock %}
+
+{% block extra_head %}
+<style>
+/* ── HERO ── */
+.pred-hero {
+    padding: 5rem 0 4rem;
+    position: relative; overflow: hidden;
+}
+.pred-hero::before {
+    content:'';
+    position:absolute; inset:0;
+    background: radial-gradient(ellipse 70% 70% at 80% 50%, rgba(138,99,210,.2) 0%, transparent 65%),
+                radial-gradient(ellipse 40% 40% at 15% 80%, rgba(201,168,76,.1) 0%, transparent 55%);
+    pointer-events:none;
+}
+.pred-hero .container { position:relative; z-index:1; }
+
+/* ── PHASE BADGES ── */
+.phases-row {
+    display:flex; flex-wrap:wrap; gap:.6rem; margin-top:2rem;
+}
+.phase-badge {
+    font-family:'DM Mono',monospace;
+    font-size:.68rem; letter-spacing:.1em; text-transform:uppercase;
+    padding:.35rem .85rem;
+    border-radius:999px;
+    border: 1px solid var(--border);
+    color:var(--muted);
+    background: rgba(255,255,255,.03);
+}
+.phase-badge.active {
+    border-color: rgba(138,99,210,.5);
+    color: var(--violet-lt);
+    background: rgba(138,99,210,.1);
+}
+
+/* ── INFO CARDS ROW ── */
+.info-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap:1rem; }
+
+/* ── FORM CARD ── */
+.form-section {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 2.5rem;
+}
+.form-section .form-label {
+    font-family:'DM Mono',monospace;
+    font-size:.7rem; letter-spacing:.1em; text-transform:uppercase;
+    color:var(--gold); margin-bottom:.5rem;
+}
+.form-section .form-control,
+.form-section .form-select {
+    background: var(--surface3);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 8px;
+    padding: .65rem 1rem;
+    font-size:.9rem;
+    transition: border-color .2s, box-shadow .2s;
+}
+.form-section .form-control:focus,
+.form-section .form-select:focus {
+    background: var(--surface3);
+    border-color: var(--violet);
+    box-shadow: 0 0 0 3px rgba(138,99,210,.18);
+    color: var(--text);
+    outline:none;
+}
+.form-section .form-control::placeholder { color: var(--dim); }
+.form-section .form-text {
+    font-size:.72rem; color:var(--muted); margin-top:.3rem;
+}
+.form-section select option { background: var(--surface3); color: var(--text); }
+
+.btn-predict {
+    background: linear-gradient(135deg, var(--violet), #6b3fa8);
+    border: none;
+    color: #fff;
+    font-family:'DM Mono',monospace;
+    font-size:.78rem; letter-spacing:.12em; text-transform:uppercase;
+    padding: .9rem 2rem;
+    border-radius: 10px;
+    width:100%;
+    transition: opacity .2s, transform .15s, box-shadow .2s;
+    box-shadow: 0 4px 20px rgba(138,99,210,.3);
+}
+.btn-predict:hover {
+    opacity:.9; transform:translateY(-1px);
+    box-shadow: 0 8px 30px rgba(138,99,210,.45);
+}
+
+/* ── RESULT ── */
+.result-box {
+    border-radius: 14px;
+    padding: 2rem;
+    text-align:center;
+    border: 1px solid;
+    position:relative; overflow:hidden;
+}
+.result-box::before {
+    content:'';
+    position:absolute; inset:0;
+    background: radial-gradient(ellipse 60% 60% at 50% 0%, rgba(255,255,255,.06), transparent);
+}
+.result-box.alto   { background: rgba(185,28,28,.15);  border-color: rgba(220,38,38,.3);  }
+.result-box.medio  { background: rgba(161,120,0,.15);  border-color: rgba(234,179,8,.3);  }
+.result-box.bajo   { background: rgba(20,100,50,.15);  border-color: rgba(34,197,94,.3);  }
+.result-label {
+    font-family:'DM Mono',monospace;
+    font-size:.7rem; letter-spacing:.2em; text-transform:uppercase;
+    color:var(--muted); margin-bottom:.5rem;
+}
+.result-value {
+    font-family:'Cormorant Garamond',serif;
+    font-size:3.5rem; font-weight:700; line-height:1;
+}
+.result-box.alto  .result-value { color:#f87171; }
+.result-box.medio .result-value { color:#fbbf24; }
+.result-box.bajo  .result-value { color:#4ade80; }
+.result-msg { font-size:.88rem; color:var(--muted); margin-top:.75rem; }
+
+/* ── FIELD GROUP TITLE ── */
+.field-group-title {
+    font-family:'DM Mono',monospace;
+    font-size:.65rem; letter-spacing:.18em; text-transform:uppercase;
+    color:var(--dim); margin-bottom:1rem; padding-bottom:.5rem;
+    border-bottom:1px solid var(--border2);
+}
+</style>
+{% endblock %}
 
 {% block content %}
 
-<section class="py-5 text-white" style="background: linear-gradient(135deg, #6f42c1, #9b59b6);">
-    <div class="container py-4 text-center">
-        <h1 class="fw-bold">Predicción de Deterioro del Patrimonio Arquitectónico Colombiano</h1>
-        <p class="lead">Aplicación práctica de la metodología CRISP-ML</p>
+<!-- HERO -->
+<section class="pred-hero">
+  <div class="container">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-6">
+        <p class="eyebrow"><i class="bi bi-cpu me-1"></i>Modelo Predictivo</p>
+        <h1 class="section-title mb-3">
+          Predicción de <em>Deterioro</em><br>Patrimonial
+        </h1>
+        <p style="font-size:.95rem;color:var(--muted);line-height:1.75;max-width:480px;">
+          Ingresa las variables ambientales, climáticas y urbanísticas de un bien de interés
+          cultural para estimar su nivel de riesgo de deterioro estructural.
+        </p>
+        <div class="phases-row">
+          <span class="phase-badge">Entendimiento</span>
+          <span class="phase-badge">Ing. Datos</span>
+          <span class="phase-badge">Ing. Modelo</span>
+          <span class="phase-badge active">Evaluación ✓</span>
+          <span class="phase-badge">Despliegue</span>
+          <span class="phase-badge">Monitoreo</span>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="info-grid">
+          <div class="glass-card d-flex gap-3 align-items-start fade-up d1">
+            <div class="icon-box"><i class="bi bi-database"></i></div>
+            <div>
+              <div class="card-label">Dataset</div>
+              <div class="card-title">1.200 Registros</div>
+              <div class="card-body-text">BIC de 10 ciudades colombianas</div>
+            </div>
+          </div>
+          <div class="glass-card d-flex gap-3 align-items-start fade-up d2">
+            <div class="icon-box"><i class="bi bi-sliders"></i></div>
+            <div>
+              <div class="card-label">Variables</div>
+              <div class="card-title">6 Factores</div>
+              <div class="card-body-text">Edad, material, clima, contaminación</div>
+            </div>
+          </div>
+          <div class="glass-card d-flex gap-3 align-items-start fade-up d3">
+            <div class="icon-box"><i class="bi bi-graph-up"></i></div>
+            <div>
+              <div class="card-label">Salida</div>
+              <div class="card-title">3 Niveles</div>
+              <div class="card-body-text">Bajo · Medio · Alto riesgo</div>
+            </div>
+          </div>
+          <div class="glass-card d-flex gap-3 align-items-start fade-up d4">
+            <div class="icon-box"><i class="bi bi-building"></i></div>
+            <div>
+              <div class="card-label">Uso</div>
+              <div class="card-title">Preventivo</div>
+              <div class="card-body-text">MinCultura · IDPC · Municipios</div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
 </section>
 
+<hr class="divider">
+
+<!-- FORM -->
 <section class="py-5">
-    <div class="container">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-xl-9">
 
-        <!-- 1. Entendimiento del Negocio y los Datos -->
-        <h2 class="text-center mb-4" style="color: #6f42c1;">Entendimiento del Negocio y los Datos</h2>
-        <div class="row g-4 mb-5">
-            <div class="col-md-3">
-                <div class="card h-100 shadow-sm">
-                    <div class="card-body">
-                        <h5><strong>Objetivos de Negocio</strong></h5>
-                        <p>Optimizar el presupuesto estatal pasando de mantenimiento correctivo a preventivo en bienes de interés cultural.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card h-100 shadow-sm">
-                    <div class="card-body">
-                        <h5><strong>Preguntas Clave</strong></h5>
-                        <p>¿Qué factores aceleran el deterioro? ¿Cómo influyen material, contaminación y vibraciones?</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card h-100 shadow-sm">
-                    <div class="card-body">
-                        <h5><strong>Evaluación de Datos</strong></h5>
-                        <p>Dataset con 1.200 registros de BIC de Colombia.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card h-100 shadow-sm">
-                    <div class="card-body">
-                        <h5><strong>Análisis de Viabilidad</strong></h5>
-                        <p>Alta viabilidad técnica usando datos abiertos.</p>
-                    </div>
-                </div>
-            </div>
+        <div class="text-center mb-4 fade-up">
+          <p class="eyebrow">Simulación</p>
+          <h2 class="section-title">Prueba el Modelo</h2>
         </div>
 
-        <!-- 2. Ingeniería de Datos -->
-        <h2 class="text-center mb-4" style="color: #6f42c1;">Ingeniería de Datos</h2>
-        <div class="row g-4 mb-5 text-center">
-            <div class="col-md-3"><div class="card h-100 shadow-sm"><div class="card-body"><h5>Selección</h5><p>Fuentes abiertas</p></div></div></div>
-            <div class="col-md-3"><div class="card h-100 shadow-sm"><div class="card-body"><h5>Limpieza</h5><p>Manejo de outliers y valores faltantes</p></div></div></div>
-            <div class="col-md-3"><div class="card h-100 shadow-sm"><div class="card-body"><h5>Transformación</h5><p>Feature Engineering y Normalización</p></div></div></div>
-            <div class="col-md-3"><div class="card h-100 shadow-sm"><div class="card-body"><h5>Documentación</h5><p>Registro completo del proceso</p></div></div></div>
-        </div>
+        <div class="form-section fade-up d1">
+          <form method="POST" class="row g-4">
 
-        <!-- Prueba del Modelo -->
-        <h2 class="text-center mb-4" style="color: #6f42c1;">Prueba el Modelo</h2>
-        <div class="row justify-content-center">
-            <div class="col-lg-10">
-                <div class="card shadow">
-                    <div class="card-body p-4">
-                        <form method="POST" class="row g-3">
-
-                            <div class="col-md-4">
-                                <label class="form-label fw-semibold">Edad Estructura (años)</label>
-                                <input type="number" name="edad" class="form-control"
-                                       placeholder="Ej: 150" min="1" max="500"
-                                       value="{{ form_data.get('edad', '') }}" required>
-                                <div class="form-text">Entre 50 y 450 años</div>
-                            </div>
-
-                            <div class="col-md-4">
-                                <label class="form-label fw-semibold">Material Principal</label>
-                                <select name="material" class="form-select" required>
-                                    <option value="" disabled {% if not form_data.get('material') %}selected{% endif %}>Selecciona...</option>
-                                    <option value="Piedra_Ladrillo"  {% if form_data.get('material') == 'Piedra_Ladrillo'  %}selected{% endif %}>Piedra Ladrillo</option>
-                                    <option value="Piedra_Coralina"  {% if form_data.get('material') == 'Piedra_Coralina'  %}selected{% endif %}>Piedra Coralina</option>
-                                    <option value="Piedra_Concreto"  {% if form_data.get('material') == 'Piedra_Concreto'  %}selected{% endif %}>Piedra Concreto</option>
-                                    <option value="Adobe_Tapia"      {% if form_data.get('material') == 'Adobe_Tapia'      %}selected{% endif %}>Adobe / Tapia</option>
-                                    <option value="Mamposteria"      {% if form_data.get('material') == 'Mamposteria'      %}selected{% endif %}>Mampostería</option>
-                                    <option value="Ladrillo"         {% if form_data.get('material') == 'Ladrillo'         %}selected{% endif %}>Ladrillo</option>
-                                </select>
-                            </div>
-
-                            <div class="col-md-4">
-                                <label class="form-label fw-semibold">Precipitación Anual (mm)</label>
-                                <input type="number" name="precipitacion" class="form-control"
-                                       placeholder="Ej: 1200" min="0" max="5000"
-                                       value="{{ form_data.get('precipitacion', '') }}" required>
-                                <div class="form-text">Promedio anual en mm</div>
-                            </div>
-
-                            <div class="col-md-4">
-                                <label class="form-label fw-semibold">Humedad Relativa (%)</label>
-                                <input type="number" name="humedad" class="form-control"
-                                       placeholder="Ej: 75" min="0" max="100" step="0.1"
-                                       value="{{ form_data.get('humedad', '') }}" required>
-                                <div class="form-text">Porcentaje promedio anual</div>
-                            </div>
-
-                            <div class="col-md-4">
-                                <label class="form-label fw-semibold">PM10 (μg/m³)</label>
-                                <input type="number" name="pm10" class="form-control"
-                                       placeholder="Ej: 35" min="0" max="500" step="0.1"
-                                       value="{{ form_data.get('pm10', '') }}" required>
-                                <div class="form-text">Material particulado promedio</div>
-                            </div>
-
-                            <div class="col-md-4">
-                                <label class="form-label fw-semibold">Distancia a Vía Principal (m)</label>
-                                <input type="number" name="distancia_via" class="form-control"
-                                       placeholder="Ej: 80" min="0" max="1000" step="0.1"
-                                       value="{{ form_data.get('distancia_via', '') }}" required>
-                                <div class="form-text">Metros a la vía más cercana</div>
-                            </div>
-
-                            <div class="col-12 mt-2">
-                                <button type="submit" class="btn btn-primary btn-lg w-100"
-                                        style="background: linear-gradient(135deg,#6f42c1,#9b59b6); border:none;">
-                                    <i class="bi bi-cpu me-2"></i>Predecir Nivel de Riesgo
-                                </button>
-                            </div>
-
-                        </form>
-
-                        {% if prediction %}
-                        <div class="mt-4 p-4 rounded-3 text-center
-                            {% if prediction == 'Alto' %}bg-danger text-white
-                            {% elif prediction == 'Medio' %}bg-warning
-                            {% else %}bg-success text-white{% endif %}">
-                            <h4 class="mb-1">Nivel de Riesgo Estimado</h4>
-                            <div style="font-size:2.5rem; font-weight:700;">{{ prediction }}</div>
-                            {% if prediction == 'Alto' %}
-                            <p class="mb-0 mt-2">⚠️ Requiere intervención urgente</p>
-                            {% elif prediction == 'Medio' %}
-                            <p class="mb-0 mt-2">🔶 Se recomienda mantenimiento preventivo</p>
-                            {% else %}
-                            <p class="mb-0 mt-2">✅ Estado estable, monitoreo periódico</p>
-                            {% endif %}
-                        </div>
-                        {% endif %}
-
-                    </div>
-                </div>
+            <!-- Grupo 1: Estructura -->
+            <div class="col-12">
+              <div class="field-group-title"><i class="bi bi-building me-2"></i>Datos de la Estructura</div>
             </div>
-        </div>
 
+            <div class="col-md-6">
+              <label class="form-label">Edad de la Estructura</label>
+              <input type="number" name="edad" class="form-control"
+                     placeholder="Ej: 150" min="1" max="500"
+                     value="{{ form_data.get('edad', '') }}" required>
+              <div class="form-text">Años de antigüedad (50–450 años)</div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Material Principal</label>
+              <select name="material" class="form-select" required>
+                <option value="" disabled {% if not form_data.get('material') %}selected{% endif %}>Selecciona material...</option>
+                <option value="Piedra_Ladrillo" {% if form_data.get('material')=='Piedra_Ladrillo' %}selected{% endif %}>Piedra Ladrillo</option>
+                <option value="Piedra_Coralina" {% if form_data.get('material')=='Piedra_Coralina' %}selected{% endif %}>Piedra Coralina</option>
+                <option value="Piedra_Concreto" {% if form_data.get('material')=='Piedra_Concreto' %}selected{% endif %}>Piedra Concreto</option>
+                <option value="Adobe_Tapia"     {% if form_data.get('material')=='Adobe_Tapia'     %}selected{% endif %}>Adobe / Tapia</option>
+                <option value="Mamposteria"     {% if form_data.get('material')=='Mamposteria'     %}selected{% endif %}>Mampostería</option>
+                <option value="Ladrillo"        {% if form_data.get('material')=='Ladrillo'        %}selected{% endif %}>Ladrillo</option>
+              </select>
+            </div>
+
+            <!-- Grupo 2: Clima -->
+            <div class="col-12 mt-2">
+              <div class="field-group-title"><i class="bi bi-cloud-rain me-2"></i>Variables Climáticas</div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Precipitación Anual</label>
+              <input type="number" name="precipitacion" class="form-control"
+                     placeholder="Ej: 1200" min="0" max="5000"
+                     value="{{ form_data.get('precipitacion', '') }}" required>
+              <div class="form-text">Milímetros por año</div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Humedad Relativa</label>
+              <input type="number" name="humedad" class="form-control"
+                     placeholder="Ej: 75" min="0" max="100" step="0.1"
+                     value="{{ form_data.get('humedad', '') }}" required>
+              <div class="form-text">Porcentaje promedio anual (%)</div>
+            </div>
+
+            <!-- Grupo 3: Urbano -->
+            <div class="col-12 mt-2">
+              <div class="field-group-title"><i class="bi bi-geo-alt me-2"></i>Variables Urbanísticas</div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">PM10</label>
+              <input type="number" name="pm10" class="form-control"
+                     placeholder="Ej: 35" min="0" max="500" step="0.1"
+                     value="{{ form_data.get('pm10', '') }}" required>
+              <div class="form-text">Material particulado (μg/m³)</div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Distancia a Vía Principal</label>
+              <input type="number" name="distancia_via" class="form-control"
+                     placeholder="Ej: 80" min="0" max="1000" step="0.1"
+                     value="{{ form_data.get('distancia_via', '') }}" required>
+              <div class="form-text">Metros a la vía más cercana</div>
+            </div>
+
+            <!-- Submit -->
+            <div class="col-12 mt-2">
+              <button type="submit" class="btn-predict">
+                <i class="bi bi-cpu me-2"></i>Calcular Nivel de Riesgo
+              </button>
+            </div>
+
+          </form>
+
+          {% if prediction %}
+          <div class="mt-4">
+            <div class="result-box {{ 'alto' if prediction=='Alto' else ('medio' if prediction=='Medio' else 'bajo') }}">
+              <div class="result-label">Riesgo Estimado</div>
+              <div class="result-value">{{ prediction }}</div>
+              <div class="result-msg">
+                {% if prediction == 'Alto' %}
+                  ⚠️ Requiere intervención urgente — contactar entidad patrimonial
+                {% elif prediction == 'Medio' %}
+                  🔶 Se recomienda mantenimiento preventivo en el corto plazo
+                {% else %}
+                  ✅ Estado estable — continuar con monitoreo periódico
+                {% endif %}
+              </div>
+            </div>
+          </div>
+          {% endif %}
+
+        </div>
+      </div>
     </div>
+  </div>
 </section>
 
 {% endblock %}

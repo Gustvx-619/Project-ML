@@ -3,188 +3,239 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Patrimonio Arquitectónico{% endblock %}</title>
+    <title>{% block title %}PatrimonioCO{% endblock %}</title>
 
-    <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-    <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=DM+Mono:wght@300;400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
 
     <style>
-        :root {
-            --primary:   #6f42c1;
-            --secondary: #9b59b6;
-            --accent:    #e8b04b;
-            --dark:      #1a1a2e;
-            --light-bg:  #f8f5ff;
-            --text-muted-custom: #6c757d;
-        }
+    :root {
+        --bg:        #0a0a0f;
+        --surface:   #111118;
+        --surface2:  #16161f;
+        --surface3:  #1d1d28;
+        --border:    rgba(138,99,210,0.18);
+        --border2:   rgba(255,255,255,0.06);
+        --violet:    #8a63d2;
+        --violet-lt: #b48ef0;
+        --gold:      #c9a84c;
+        --gold-lt:   #e8c97a;
+        --text:      #e8e6f0;
+        --muted:     #7a7890;
+        --dim:       #3a3850;
+    }
 
-        * { box-sizing: border-box; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        body {
-            font-family: 'DM Sans', sans-serif;
-            background-color: var(--light-bg);
-            color: #2d2d2d;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
+    html { scroll-behavior: smooth; }
 
-        h1, h2, h3, h4, h5 {
-            font-family: 'Playfair Display', serif;
-        }
+    body {
+        font-family: 'Outfit', sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        -webkit-font-smoothing: antialiased;
+    }
 
-        /* ── NAVBAR ── */
-        .navbar {
-            background: var(--dark);
-            padding: 1rem 0;
-            border-bottom: 3px solid var(--accent);
-        }
+    /* ─── Noise texture overlay ─── */
+    body::before {
+        content: '';
+        position: fixed; inset: 0; z-index: 0;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+        background-size: 150px;
+        pointer-events: none;
+        opacity: .4;
+    }
 
-        .navbar-brand {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.4rem;
-            color: #fff !important;
-            letter-spacing: 0.5px;
-        }
+    body > * { position: relative; z-index: 1; }
 
-        .navbar-brand span {
-            color: var(--accent);
-        }
+    /* ─── NAVBAR ─── */
+    .site-nav {
+        background: rgba(10,10,15,0.85);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-bottom: 1px solid var(--border);
+        padding: .9rem 0;
+        position: sticky; top: 0; z-index: 1000;
+    }
 
-        .nav-link {
-            color: rgba(255,255,255,0.8) !important;
-            font-size: 0.9rem;
-            font-weight: 500;
-            transition: color 0.2s;
-        }
+    .nav-brand {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 1.45rem;
+        font-weight: 600;
+        color: var(--text) !important;
+        text-decoration: none;
+        letter-spacing: .02em;
+        display: flex; align-items: center; gap: .5rem;
+    }
+    .nav-brand .brand-icon {
+        width: 32px; height: 32px;
+        background: linear-gradient(135deg, var(--violet), var(--gold));
+        border-radius: 8px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: .9rem;
+    }
+    .nav-brand em { color: var(--gold); font-style: normal; }
 
-        .nav-link:hover {
-            color: var(--accent) !important;
-        }
+    .navbar-nav .nav-link {
+        font-family: 'DM Mono', monospace;
+        font-size: .72rem;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+        color: var(--muted) !important;
+        padding: .4rem .9rem !important;
+        border-radius: 6px;
+        border: 1px solid transparent;
+        transition: all .2s;
+    }
+    .navbar-nav .nav-link:hover,
+    .navbar-nav .nav-link.active {
+        color: var(--violet-lt) !important;
+        border-color: var(--border);
+        background: rgba(138,99,210,.08);
+    }
 
-        .navbar-toggler {
-            border-color: rgba(255,255,255,0.3);
-        }
+    .navbar-toggler { border-color: var(--border); }
+    .navbar-toggler-icon { filter: invert(.7); }
 
-        .navbar-toggler-icon {
-            filter: invert(1);
-        }
+    /* ─── MAIN ─── */
+    main { flex: 1; }
 
-        /* ── MAIN CONTENT ── */
-        main {
-            flex: 1;
-        }
+    /* ─── FOOTER ─── */
+    .site-footer {
+        background: var(--surface);
+        border-top: 1px solid var(--border);
+        padding: 2rem 0;
+        text-align: center;
+    }
+    .site-footer .footer-brand {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 1.1rem; font-weight: 600;
+        color: var(--text); margin-bottom: .4rem;
+    }
+    .site-footer p {
+        font-family: 'DM Mono', monospace;
+        font-size: .7rem; letter-spacing: .08em;
+        color: var(--muted);
+    }
+    .site-footer a { color: var(--gold); text-decoration: none; }
+    .site-footer a:hover { color: var(--gold-lt); }
 
-        /* ── FOOTER ── */
-        footer {
-            background: var(--dark);
-            color: rgba(255,255,255,0.6);
-            font-size: 0.85rem;
-            padding: 1.5rem 0;
-            text-align: center;
-            border-top: 3px solid var(--accent);
-        }
+    /* ─── SHARED COMPONENTS ─── */
+    .eyebrow {
+        font-family: 'DM Mono', monospace;
+        font-size: .68rem; letter-spacing: .2em;
+        text-transform: uppercase; color: var(--gold);
+        margin-bottom: .6rem;
+    }
+    .section-title {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: clamp(1.9rem, 3.5vw, 2.8rem);
+        font-weight: 600; line-height: 1.15;
+        color: var(--text);
+    }
+    .section-title em { color: var(--violet-lt); font-style: italic; }
 
-        footer a {
-            color: var(--accent);
-            text-decoration: none;
-        }
+    .glass-card {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 1.5rem;
+        transition: border-color .25s, transform .25s, box-shadow .25s;
+    }
+    .glass-card:hover {
+        border-color: rgba(138,99,210,.45);
+        transform: translateY(-3px);
+        box-shadow: 0 12px 40px rgba(0,0,0,.4), 0 0 0 1px rgba(138,99,210,.15);
+    }
 
-        footer a:hover {
-            text-decoration: underline;
-        }
+    .icon-box {
+        width: 44px; height: 44px; flex-shrink: 0;
+        background: linear-gradient(135deg, rgba(138,99,210,.25), rgba(201,168,76,.15));
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        display: flex; align-items: center; justify-content: center;
+        color: var(--violet-lt); font-size: 1.1rem;
+    }
 
-        /* ── CARDS ── */
-        .card {
-            border: none;
-            border-radius: 12px;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
+    .card-label {
+        font-family: 'DM Mono', monospace;
+        font-size: .7rem; letter-spacing: .1em;
+        text-transform: uppercase; color: var(--gold);
+        margin-bottom: .3rem;
+    }
+    .card-title {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 1.1rem; font-weight: 600;
+        color: var(--text); margin-bottom: .35rem;
+    }
+    .card-body-text {
+        font-size: .85rem; color: var(--muted); line-height: 1.65;
+    }
 
-        .card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 24px rgba(111,66,193,0.15) !important;
-        }
+    /* fade-up animation */
+    .fade-up { opacity: 0; transform: translateY(20px); transition: opacity .55s ease, transform .55s ease; }
+    .fade-up.visible { opacity: 1; transform: none; }
+    .d1{transition-delay:.08s}.d2{transition-delay:.16s}.d3{transition-delay:.24s}.d4{transition-delay:.32s}
 
-        /* ── BUTTONS ── */
-        .btn-primary {
-            background: var(--primary);
-            border-color: var(--primary);
-            font-weight: 500;
-            letter-spacing: 0.3px;
-        }
-
-        .btn-primary:hover {
-            background: var(--secondary);
-            border-color: var(--secondary);
-        }
-
-        /* ── HERO GRADIENT ── */
-        .hero-gradient {
-            background: linear-gradient(135deg, var(--dark) 0%, var(--primary) 100%);
-        }
+    /* divider line */
+    .divider {
+        height: 1px;
+        background: linear-gradient(90deg, transparent, var(--violet), var(--gold), transparent);
+        border: none; margin: 0;
+    }
     </style>
 
     {% block extra_head %}{% endblock %}
 </head>
 <body>
 
-    <!-- NAVBAR -->
-    <nav class="navbar navbar-expand-lg">
-        <div class="container">
-            <a class="navbar-brand" href="/">
-                <i class="bi bi-building me-2"></i>Patrimonio<span>CO</span>
-            </a>
-            <button class="navbar-toggler" type="button"
-                    data-bs-toggle="collapse" data-bs-target="#navbarMain">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarMain">
-                <ul class="navbar-nav ms-auto gap-2">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/"><i class="bi bi-house me-1"></i>Inicio</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/crisp-ml">
-                            <i class="bi bi-diagram-3 me-1"></i>CRISP-ML
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/heritage-application">
-                            <i class="bi bi-cpu me-1"></i>Predicción
-                        </a>
-                    </li>
-                </ul>
-            </div>
+<nav class="site-nav navbar navbar-expand-lg">
+    <div class="container">
+        <a class="nav-brand" href="/">
+            <div class="brand-icon"><i class="bi bi-buildings"></i></div>
+            Patrimonio<em>CO</em>
+        </a>
+        <button class="navbar-toggler" type="button"
+                data-bs-toggle="collapse" data-bs-target="#navMain">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navMain">
+            <ul class="navbar-nav ms-auto gap-1">
+                <li class="nav-item">
+                    <a class="nav-link" href="/"><i class="bi bi-house me-1"></i>Inicio</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/crisp-ml"><i class="bi bi-diagram-3 me-1"></i>CRISP-ML</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/heritage-application"><i class="bi bi-cpu me-1"></i>Predicción</a>
+                </li>
+            </ul>
         </div>
-    </nav>
+    </div>
+</nav>
 
-    <!-- CONTENIDO PRINCIPAL -->
-    <main>
-        {% block content %}{% endblock %}
-    </main>
+<main>{% block content %}{% endblock %}</main>
 
-    <!-- FOOTER -->
-    <footer>
-        <div class="container">
-            <p class="mb-1">
-                <strong style="color:#fff;">PatrimonioCO</strong> &mdash;
-                Predicción de Deterioro del Patrimonio Arquitectónico Colombiano
-            </p>
-            <p class="mb-0">
-                Metodología <a href="#">CRISP-ML</a> &nbsp;|&nbsp;
-                Dataset: 1.200 BIC de Colombia &nbsp;|&nbsp;
-                &copy; {{ 2026 }}
-            </p>
-        </div>
-    </footer>
+<hr class="divider">
+<footer class="site-footer">
+    <div class="container">
+        <div class="footer-brand"><i class="bi bi-buildings me-2"></i>PatrimonioCO</div>
+        <p>Predicción de Deterioro del Patrimonio Arquitectónico Colombiano &nbsp;·&nbsp;
+           Metodología <a href="/crisp-ml">CRISP-ML</a> &nbsp;·&nbsp;
+           Dataset 1.200 BIC &nbsp;·&nbsp; © 2026</p>
+    </div>
+</footer>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    {% block extra_scripts %}{% endblock %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+const obs = new IntersectionObserver(e => e.forEach(x => { if(x.isIntersecting){ x.target.classList.add('visible'); obs.unobserve(x.target); }}), {threshold:.1});
+document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
+</script>
+{% block extra_scripts %}{% endblock %}
 </body>
 </html>
