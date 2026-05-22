@@ -1,0 +1,289 @@
+{% extends "layout.html" %}
+{% block title %}Business Understanding — PatrimonioCO{% endblock %}
+
+{% block extra_head %}
+<style>
+.bu-hero { padding:5rem 0 3.5rem; position:relative; overflow:hidden; }
+.bu-hero::before {
+    content:''; position:absolute; inset:0;
+    background: radial-gradient(ellipse 70% 60% at 75% 40%, rgba(138,99,210,.2) 0%, transparent 65%),
+                radial-gradient(ellipse 35% 40% at 10% 85%, rgba(201,168,76,.1) 0%, transparent 55%);
+    pointer-events:none;
+}
+.bu-hero .container { position:relative; z-index:1; }
+
+.content-sec { padding:4rem 0; border-top:1px solid var(--border2); }
+.content-sec:nth-child(even) { background:var(--surface); }
+
+.phase-num { font-family:'DM Mono',monospace; font-size:.65rem; letter-spacing:.2em; text-transform:uppercase; color:var(--violet); margin-bottom:.4rem; }
+.page-title { font-family:'Cormorant Garamond',serif; font-size:clamp(2rem,4vw,3rem); font-weight:600; color:var(--text); line-height:1.15; }
+.page-title em { color:var(--gold); font-style:italic; }
+
+.block-title { font-family:'Cormorant Garamond',serif; font-size:1.5rem; font-weight:600; color:var(--text); margin-bottom:.75rem; }
+.block-body { font-size:.9rem; color:var(--muted); line-height:1.8; }
+.block-body strong { color:var(--violet-lt); }
+
+.question-card {
+    background:var(--surface3); border:1px solid var(--border);
+    border-left:3px solid var(--gold);
+    border-radius:10px; padding:1.25rem 1.5rem; margin-bottom:1rem;
+}
+.question-card .q-num { font-family:'DM Mono',monospace; font-size:.65rem; letter-spacing:.15em; text-transform:uppercase; color:var(--gold); margin-bottom:.4rem; }
+.question-card .q-text { font-family:'Cormorant Garamond',serif; font-size:1.15rem; font-weight:600; color:var(--text); margin-bottom:.5rem; }
+.question-card .q-why { font-size:.83rem; color:var(--muted); line-height:1.65; }
+
+.risk-card {
+    background:var(--surface2); border:1px solid var(--border); border-radius:12px; padding:1.25rem;
+    display:flex; gap:1rem; align-items:flex-start;
+}
+.risk-badge { font-family:'DM Mono',monospace; font-size:.62rem; letter-spacing:.1em; text-transform:uppercase; padding:.25rem .7rem; border-radius:999px; flex-shrink:0; margin-top:.15rem; }
+.risk-badge.alto { background:rgba(220,38,38,.15); color:#f87171; border:1px solid rgba(220,38,38,.25); }
+.risk-badge.medio { background:rgba(234,179,8,.12); color:#fbbf24; border:1px solid rgba(234,179,8,.25); }
+.risk-badge.bajo { background:rgba(34,197,94,.12); color:#4ade80; border:1px solid rgba(34,197,94,.25); }
+
+.impact-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1rem; }
+.impact-card {
+    background:var(--surface2); border:1px solid var(--border); border-radius:12px;
+    padding:1.5rem; text-align:center;
+}
+.impact-num { font-family:'DM Mono',monospace; font-size:1.8rem; font-weight:500; color:var(--gold); line-height:1; }
+.impact-lbl { font-size:.78rem; color:var(--muted); margin-top:.4rem; text-transform:uppercase; letter-spacing:.07em; }
+
+.obj-list { list-style:none; padding:0; }
+.obj-list li { display:flex; gap:.85rem; align-items:flex-start; padding:.75rem 0; border-bottom:1px solid var(--border2); font-size:.9rem; color:var(--muted); line-height:1.65; }
+.obj-list li:last-child { border-bottom:none; }
+.obj-list .marker { font-family:'DM Mono',monospace; font-size:.65rem; color:var(--violet); background:rgba(138,99,210,.12); border:1px solid var(--border); border-radius:5px; padding:.2rem .5rem; flex-shrink:0; margin-top:.1rem; }
+
+.feas-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:1rem; }
+.feas-card { background:var(--surface2); border:1px solid var(--border); border-radius:12px; padding:1.3rem; }
+.feas-icon { font-size:1.5rem; margin-bottom:.6rem; color:var(--violet-lt); }
+.feas-title { font-family:'Cormorant Garamond',serif; font-size:1rem; font-weight:600; color:var(--text); margin-bottom:.4rem; }
+.feas-body { font-size:.82rem; color:var(--muted); line-height:1.65; }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- HERO -->
+<section class="bu-hero">
+  <div class="container">
+    <p class="phase-num"><i class="bi bi-1-circle me-1"></i>Fase 1 · CRISP-ML</p>
+    <h1 class="page-title">Business <em>Understanding</em></h1>
+    <p style="font-size:.95rem;color:var(--muted);line-height:1.78;max-width:580px;margin-top:1rem;">
+      Entendimiento del negocio y los datos: alineación del esfuerzo técnico con las
+      necesidades reales del sector patrimonial colombiano.
+    </p>
+  </div>
+</section>
+
+<!-- CONTEXTO -->
+<section class="content-sec" id="contexto">
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-lg-4 fade-up">
+        <p class="phase-num">01</p>
+        <h2 class="block-title">Contexto del Problema</h2>
+      </div>
+      <div class="col-lg-8 fade-up d1">
+        <p class="block-body">
+          Colombia posee un patrimonio arquitectónico de valor histórico excepcional: iglesias coloniales,
+          haciendas centenarias, centros históricos y edificaciones de tierra que conforman la identidad
+          cultural del país. Estas estructuras —catalogadas como <strong>Bienes de Interés Cultural (BIC)</strong>—
+          están expuestas a un deterioro progresivo causado por la interacción de factores climáticos,
+          ambientales y urbanísticos.
+        </p>
+        <p class="block-body" style="margin-top:1rem;">
+          El modelo de mantenimiento actual es <strong>correctivo</strong>: se actúa sobre la estructura solo cuando
+          el daño ya es visible y costoso. Las entidades como <strong>MinCultura</strong> y el <strong>IDPC</strong>
+          no cuentan con herramientas predictivas que permitan anticipar el deterioro antes de que ocurra,
+          lo que genera sobrecostos y pérdida irreversible de patrimonio.
+        </p>
+        <p class="block-body" style="margin-top:1rem;">
+          Este proyecto propone aplicar técnicas de <strong>Machine Learning</strong> sobre variables ambientales
+          y urbanísticas abiertas (IDEAM, OpenStreetMap, Datos Abiertos Colombia) para predecir el nivel
+          de deterioro de cada BIC y priorizar intervenciones preventivas de forma eficiente.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- OBJETIVOS -->
+<section class="content-sec" id="objetivos">
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-lg-4 fade-up">
+        <p class="phase-num">02</p>
+        <h2 class="block-title">Objetivos de Negocio</h2>
+      </div>
+      <div class="col-lg-8 fade-up d1">
+        <p class="block-body" style="margin-bottom:1.5rem;">
+          El propósito principal es <strong>traducir las necesidades del sector patrimonial en metas concretas</strong>
+          de Machine Learning, permitiendo pasar de un modelo reactivo a uno predictivo y preventivo.
+        </p>
+        <ul class="obj-list">
+          <li><span class="marker">OBJ 1</span>Desarrollar un modelo de clasificación que prediga el nivel de deterioro (Bajo / Medio / Alto) de cualquier BIC a partir de sus variables ambientales, climáticas y urbanísticas.</li>
+          <li><span class="marker">OBJ 2</span>Reducir el costo de mantenimiento correctivo mediante la identificación temprana de estructuras en riesgo, permitiendo intervenciones preventivas planificadas.</li>
+          <li><span class="marker">OBJ 3</span>Proveer a MinCultura, IDPC y municipios una herramienta de priorización basada en datos para la asignación eficiente del presupuesto de conservación patrimonial.</li>
+          <li><span class="marker">OBJ 4</span>Documentar el proceso completo bajo la metodología CRISP-ML para garantizar reproducibilidad, auditabilidad y escalabilidad del modelo a nuevas regiones o periodos.</li>
+          <li><span class="marker">OBJ 5</span>Demostrar la viabilidad técnica de usar únicamente fuentes de datos abiertos como insumo suficiente para un sistema predictivo de conservación patrimonial.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PREGUNTAS CLAVE -->
+<section class="content-sec" id="preguntas">
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-lg-4 fade-up">
+        <p class="phase-num">03</p>
+        <h2 class="block-title">Preguntas que el Modelo debe Responder</h2>
+      </div>
+      <div class="col-lg-8">
+        <div class="question-card fade-up d1">
+          <div class="q-num">Pregunta 01</div>
+          <div class="q-text">¿Qué combinación de material y PM10 acelera más rápido el deterioro hacia un estado Alto?</div>
+          <div class="q-why">El adobe y la tapia pisada son materiales porosos altamente susceptibles a la erosión hídrica. Combinados con altos niveles de PM10 (lluvia ácida), el paso de nivel Bajo a Alto puede acelerarse significativamente. El modelo debe identificar estos umbrales críticos de interacción.</div>
+        </div>
+        <div class="question-card fade-up d2">
+          <div class="q-num">Pregunta 02</div>
+          <div class="q-text">¿Cómo influye la vibración por cercanía a vías principales en edificaciones con más de 200 años?</div>
+          <div class="q-why">Las estructuras centenarias tienen menor capacidad de absorber vibraciones mecánicas. La variable Distancia_Via_Principal_m en combinación con Edad_Estructura_Anios captura este riesgo sinérgico. El modelo debe cuantificar en qué medida la proximidad a vías acelera el deterioro en patrimonio antiguo.</div>
+        </div>
+        <div class="question-card fade-up d3">
+          <div class="q-num">Pregunta 03</div>
+          <div class="q-text">¿Cuáles son las variables con mayor poder predictivo sobre el nivel de deterioro?</div>
+          <div class="q-why">Comprender qué variables contribuyen más al modelo (feature importance) permite a las entidades públicas enfocar sus esfuerzos de recolección de datos y monitoreo en los indicadores de mayor impacto predictivo.</div>
+        </div>
+        <div class="question-card fade-up d4">
+          <div class="q-num">Pregunta 04</div>
+          <div class="q-text">¿Es posible predecir el nivel de deterioro con suficiente precisión usando solo datos abiertos?</div>
+          <div class="q-why">Validar que las fuentes IDEAM, OpenStreetMap y Datos Abiertos Colombia son suficientes como insumo predictivo, sin necesidad de inspecciones físicas costosas, es un objetivo central de viabilidad del proyecto.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FACTIBILIDAD -->
+<section class="content-sec" id="factibilidad">
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-lg-4 fade-up">
+        <p class="phase-num">04</p>
+        <h2 class="block-title">Análisis de Factibilidad</h2>
+      </div>
+      <div class="col-lg-8 fade-up d1">
+        <div class="feas-row">
+          <div class="feas-card">
+            <div class="feas-icon"><i class="bi bi-cpu"></i></div>
+            <div class="feas-title">Factibilidad Técnica</div>
+            <div class="feas-body">Alta. El dataset de 1.200 registros es suficiente para entrenar algoritmos de clasificación supervisada. Las librerías scikit-learn, pandas y Flask están disponibles y son de código abierto. El despliegue en Render o servicios similares es gratuito.</div>
+          </div>
+          <div class="feas-card">
+            <div class="feas-icon"><i class="bi bi-database"></i></div>
+            <div class="feas-title">Factibilidad de Datos</div>
+            <div class="feas-body">Alta. Las variables provienen de fuentes abiertas: IDEAM (clima), OpenStreetMap (vías), Datos Abiertos Colombia (BIC). No se requieren datos privados ni costosos. El dataset ya está estructurado y limpio.</div>
+          </div>
+          <div class="feas-card">
+            <div class="feas-icon"><i class="bi bi-cash-stack"></i></div>
+            <div class="feas-title">Factibilidad Económica</div>
+            <div class="feas-body">Alta. El costo de implementación es mínimo (infraestructura cloud gratuita). El retorno es significativo: el mantenimiento preventivo cuesta hasta 5 veces menos que el correctivo en patrimonio histórico.</div>
+          </div>
+          <div class="feas-card">
+            <div class="feas-icon"><i class="bi bi-building-check"></i></div>
+            <div class="feas-title">Factibilidad Organizacional</div>
+            <div class="feas-body">Media. Requiere que MinCultura, IDPC y municipios adopten el modelo y actualicen sus catastros con regularidad. El riesgo principal es la inconsistencia en la frecuencia de actualización entre ciudades grandes y municipios pequeños.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RIESGOS -->
+<section class="content-sec" id="riesgos">
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-lg-4 fade-up">
+        <p class="phase-num">05</p>
+        <h2 class="block-title">Riesgos y Limitaciones</h2>
+      </div>
+      <div class="col-lg-8">
+        <div class="row g-3">
+          <div class="col-12 fade-up d1">
+            <div class="risk-card">
+              <span class="risk-badge alto">Alto</span>
+              <div>
+                <div style="font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:600;color:var(--text);margin-bottom:.3rem;">Desbalance de clases en el dataset</div>
+                <div style="font-size:.83rem;color:var(--muted);line-height:1.65;">Solo el 1.5% de los registros corresponden a deterioro Alto. Esto puede sesgar el modelo hacia predecir siempre Bajo o Medio. Mitigación: técnicas de oversampling (SMOTE) o ajuste de pesos de clase.</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 fade-up d2">
+            <div class="risk-card">
+              <span class="risk-badge alto">Alto</span>
+              <div>
+                <div style="font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:600;color:var(--text);margin-bottom:.3rem;">Actualización desigual de catastros municipales</div>
+                <div style="font-size:.83rem;color:var(--muted);line-height:1.65;">Los municipios pequeños no actualizan sus registros patrimoniales con la misma frecuencia que ciudades principales, generando datos desactualizados que reducen la precisión del modelo.</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 fade-up d3">
+            <div class="risk-card">
+              <span class="risk-badge medio">Medio</span>
+              <div>
+                <div style="font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:600;color:var(--text);margin-bottom:.3rem;">Dataset sintético / simulado</div>
+                <div style="font-size:.83rem;color:var(--muted);line-height:1.65;">El dataset simula datos reales con distribuciones plausibles. En producción real, las correlaciones entre variables pueden ser distintas, requiriendo reentrenamiento con datos verificados en campo.</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 fade-up d4">
+            <div class="risk-card">
+              <span class="risk-badge bajo">Bajo</span>
+              <div>
+                <div style="font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:600;color:var(--text);margin-bottom:.3rem;">Limitaciones de variables disponibles</div>
+                <div style="font-size:.83rem;color:var(--muted);line-height:1.65;">Factores como sismos históricos, intervenciones previas o calidad constructiva original no están capturados en el dataset. Su inclusión futura mejoraría la precisión del modelo.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- IMPACTO ESPERADO -->
+<section class="content-sec" id="impacto">
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-lg-4 fade-up">
+        <p class="phase-num">06</p>
+        <h2 class="block-title">Impacto Esperado</h2>
+      </div>
+      <div class="col-lg-8 fade-up d1">
+        <div class="impact-grid mb-4">
+          <div class="impact-card"><div class="impact-num">5×</div><div class="impact-lbl">Reducción costo vs. correctivo</div></div>
+          <div class="impact-card"><div class="impact-num">1.200</div><div class="impact-lbl">BIC evaluables simultáneamente</div></div>
+          <div class="impact-card"><div class="impact-num">10</div><div class="impact-lbl">Ciudades colombianas cubiertas</div></div>
+          <div class="impact-card"><div class="impact-num">100%</div><div class="impact-lbl">Fuentes de datos abiertas</div></div>
+        </div>
+        <p class="block-body">
+          La implementación exitosa del modelo permitirá a <strong>MinCultura</strong> y al <strong>IDPC</strong>
+          priorizar las intervenciones de conservación antes de que el deterioro sea irreversible. El impacto
+          se extiende más allá del ahorro económico: la preservación del patrimonio cultural es un activo
+          de identidad nacional que, una vez perdido, no puede recuperarse.
+        </p>
+        <p class="block-body" style="margin-top:1rem;">
+          A mediano plazo, el modelo puede escalar a los <strong>1.130+ municipios</strong> de Colombia que
+          cuentan con bienes patrimoniales registrados, convirtiéndose en una herramienta de política
+          pública para la gestión preventiva del patrimonio arquitectónico a escala nacional.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
