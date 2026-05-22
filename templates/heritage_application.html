@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% block title %}Predicción de Deterioro — PatrimonioCO{% endblock %}
+{% block title %}Deterioration Prediction — PatrimonioCO{% endblock %}
 
 {% block extra_head %}
 <style>
@@ -139,21 +139,21 @@
   <div class="container">
     <div class="row align-items-center g-5">
       <div class="col-lg-6">
-        <p class="eyebrow"><i class="bi bi-cpu me-1"></i>Modelo Predictivo</p>
+        <p class="eyebrow"><i class="bi bi-cpu me-1"></i>Predictive Model</p>
         <h1 class="section-title mb-3">
-          Predicción de <em>Deterioro</em><br>Patrimonial
+          Heritage <em>Deterioration</em><br>Prediction
         </h1>
         <p style="font-size:.95rem;color:var(--muted);line-height:1.75;max-width:480px;">
-          Ingresa las variables ambientales, climáticas y urbanísticas de un bien de interés
-          cultural para estimar su nivel de riesgo de deterioro estructural.
+          Enter the environmental, climatic, and urban variables of a heritage asset
+          to estimate its structural deterioration risk level.
         </p>
         <div class="phases-row">
-          <span class="phase-badge">Entendimiento</span>
-          <span class="phase-badge">Ing. Datos</span>
-          <span class="phase-badge">Ing. Modelo</span>
-          <span class="phase-badge active">Evaluación ✓</span>
-          <span class="phase-badge">Despliegue</span>
-          <span class="phase-badge">Monitoreo</span>
+          <span class="phase-badge">Understanding</span>
+          <span class="phase-badge">Data Eng.</span>
+          <span class="phase-badge">Model Eng.</span>
+          <span class="phase-badge active">Evaluation ✓</span>
+          <span class="phase-badge">Deployment</span>
+          <span class="phase-badge">Monitoring</span>
         </div>
       </div>
       <div class="col-lg-6">
@@ -162,32 +162,32 @@
             <div class="icon-box"><i class="bi bi-database"></i></div>
             <div>
               <div class="card-label">Dataset</div>
-              <div class="card-title">1.200 Registros</div>
-              <div class="card-body-text">BIC de 10 ciudades colombianas</div>
+              <div class="card-title">1,200 Records</div>
+              <div class="card-body-text">BICs from 10 Colombian cities</div>
             </div>
           </div>
           <div class="glass-card d-flex gap-3 align-items-start fade-up d2">
             <div class="icon-box"><i class="bi bi-sliders"></i></div>
             <div>
               <div class="card-label">Variables</div>
-              <div class="card-title">6 Factores</div>
-              <div class="card-body-text">Edad, material, clima, contaminación</div>
+              <div class="card-title">6 Factors</div>
+              <div class="card-body-text">Age, material, climate, pollution</div>
             </div>
           </div>
           <div class="glass-card d-flex gap-3 align-items-start fade-up d3">
             <div class="icon-box"><i class="bi bi-graph-up"></i></div>
             <div>
-              <div class="card-label">Salida</div>
-              <div class="card-title">3 Niveles</div>
-              <div class="card-body-text">Bajo · Medio · Alto riesgo</div>
+              <div class="card-label">Output</div>
+              <div class="card-title">3 Levels</div>
+              <div class="card-body-text">Low · Medium · High risk</div>
             </div>
           </div>
           <div class="glass-card d-flex gap-3 align-items-start fade-up d4">
             <div class="icon-box"><i class="bi bi-building"></i></div>
             <div>
-              <div class="card-label">Uso</div>
-              <div class="card-title">Preventivo</div>
-              <div class="card-body-text">MinCultura · IDPC · Municipios</div>
+              <div class="card-label">Use</div>
+              <div class="card-title">Preventive</div>
+              <div class="card-body-text">MinCultura · IDPC · Municipalities</div>
             </div>
           </div>
         </div>
@@ -205,8 +205,8 @@
       <div class="col-xl-9">
 
         <div class="text-center mb-4 fade-up">
-          <p class="eyebrow">Simulación</p>
-          <h2 class="section-title">Prueba el Modelo</h2>
+          <p class="eyebrow">Simulation</p>
+          <h2 class="section-title">Test the Model</h2>
         </div>
 
         <div class="form-section fade-up d1">
@@ -214,54 +214,54 @@
 
             <!-- Grupo 1: Estructura -->
             <div class="col-12">
-              <div class="field-group-title"><i class="bi bi-building me-2"></i>Datos de la Estructura</div>
+              <div class="field-group-title"><i class="bi bi-building me-2"></i>Structure Data</div>
             </div>
 
             <div class="col-md-6">
-              <label class="form-label">Edad de la Estructura</label>
+              <label class="form-label">Structure Age</label>
               <input type="number" name="edad" class="form-control"
                      placeholder="Ej: 150" min="1" max="500"
                      value="{{ form_data.get('edad', '') }}" required>
-              <div class="form-text">Años de antigüedad (50–450 años)</div>
+              <div class="form-text">Years of age (50–450 years)</div>
             </div>
 
             <div class="col-md-6">
-              <label class="form-label">Material Principal</label>
+              <label class="form-label">Main Material</label>
               <select name="material" class="form-select" required>
-                <option value="" disabled {% if not form_data.get('material') %}selected{% endif %}>Selecciona material...</option>
-                <option value="Piedra_Ladrillo" {% if form_data.get('material')=='Piedra_Ladrillo' %}selected{% endif %}>Piedra Ladrillo</option>
-                <option value="Piedra_Coralina" {% if form_data.get('material')=='Piedra_Coralina' %}selected{% endif %}>Piedra Coralina</option>
-                <option value="Piedra_Concreto" {% if form_data.get('material')=='Piedra_Concreto' %}selected{% endif %}>Piedra Concreto</option>
-                <option value="Adobe_Tapia"     {% if form_data.get('material')=='Adobe_Tapia'     %}selected{% endif %}>Adobe / Tapia</option>
-                <option value="Mamposteria"     {% if form_data.get('material')=='Mamposteria'     %}selected{% endif %}>Mampostería</option>
-                <option value="Ladrillo"        {% if form_data.get('material')=='Ladrillo'        %}selected{% endif %}>Ladrillo</option>
+                <option value="" disabled {% if not form_data.get('material') %}selected{% endif %}>Select material...</option>
+                <option value="Piedra_Brick" {% if form_data.get('material')=='Piedra_Brick' %}selected{% endif %}>Stone Brick</option>
+                <option value="Piedra_Coralina" {% if form_data.get('material')=='Piedra_Coralina' %}selected{% endif %}>Coral Stone</option>
+                <option value="Piedra_Concreto" {% if form_data.get('material')=='Piedra_Concreto' %}selected{% endif %}>Stone Concrete</option>
+                <option value="Adobe_Tapia"     {% if form_data.get('material')=='Adobe_Tapia'     %}selected{% endif %}>Adobe / Rammed Earth</option>
+                <option value="Mamposteria"     {% if form_data.get('material')=='Mamposteria'     %}selected{% endif %}>Masonry</option>
+                <option value="Brick"        {% if form_data.get('material')=='Brick'        %}selected{% endif %}>Brick</option>
               </select>
             </div>
 
             <!-- Grupo 2: Clima -->
             <div class="col-12 mt-2">
-              <div class="field-group-title"><i class="bi bi-cloud-rain me-2"></i>Variables Climáticas</div>
+              <div class="field-group-title"><i class="bi bi-cloud-rain me-2"></i>Climate Variables</div>
             </div>
 
             <div class="col-md-6">
-              <label class="form-label">Precipitación Anual</label>
+              <label class="form-label">Annual Precipitation</label>
               <input type="number" name="precipitacion" class="form-control"
                      placeholder="Ej: 1200" min="0" max="5000"
                      value="{{ form_data.get('precipitacion', '') }}" required>
-              <div class="form-text">Milímetros por año</div>
+              <div class="form-text">Millimeters per year</div>
             </div>
 
             <div class="col-md-6">
-              <label class="form-label">Humedad Relativa</label>
+              <label class="form-label">Relative Humidity</label>
               <input type="number" name="humedad" class="form-control"
                      placeholder="Ej: 75" min="0" max="100" step="0.1"
                      value="{{ form_data.get('humedad', '') }}" required>
-              <div class="form-text">Porcentaje promedio anual (%)</div>
+              <div class="form-text">Average annual percentage (%)</div>
             </div>
 
             <!-- Grupo 3: Urbano -->
             <div class="col-12 mt-2">
-              <div class="field-group-title"><i class="bi bi-geo-alt me-2"></i>Variables Urbanísticas</div>
+              <div class="field-group-title"><i class="bi bi-geo-alt me-2"></i>Urban Variables</div>
             </div>
 
             <div class="col-md-6">
@@ -269,21 +269,21 @@
               <input type="number" name="pm10" class="form-control"
                      placeholder="Ej: 35" min="0" max="500" step="0.1"
                      value="{{ form_data.get('pm10', '') }}" required>
-              <div class="form-text">Material particulado (μg/m³)</div>
+              <div class="form-text">Particulate matter (μg/m³)</div>
             </div>
 
             <div class="col-md-6">
-              <label class="form-label">Distancia a Vía Principal</label>
+              <label class="form-label">Distance to Main Road</label>
               <input type="number" name="distancia_via" class="form-control"
                      placeholder="Ej: 80" min="0" max="1000" step="0.1"
                      value="{{ form_data.get('distancia_via', '') }}" required>
-              <div class="form-text">Metros a la vía más cercana</div>
+              <div class="form-text">Meters to the nearest road</div>
             </div>
 
             <!-- Submit -->
             <div class="col-12 mt-2">
               <button type="submit" class="btn-predict">
-                <i class="bi bi-cpu me-2"></i>Calcular Nivel de Riesgo
+                <i class="bi bi-cpu me-2"></i>Calculate Risk Level
               </button>
             </div>
 
@@ -291,16 +291,16 @@
 
           {% if prediction %}
           <div class="mt-4">
-            <div class="result-box {{ 'alto' if prediction=='Alto' else ('medio' if prediction=='Medio' else 'bajo') }}">
-              <div class="result-label">Riesgo Estimado</div>
+            <div class="result-box {{ 'alto' if prediction=='High' else ('medio' if prediction=='Medium' else 'bajo') }}">
+              <div class="result-label">Estimated Risk</div>
               <div class="result-value">{{ prediction }}</div>
               <div class="result-msg">
-                {% if prediction == 'Alto' %}
-                  ⚠️ Requiere intervención urgente — contactar entidad patrimonial
-                {% elif prediction == 'Medio' %}
-                  🔶 Se recomienda mantenimiento preventivo en el corto plazo
+                {% if prediction == 'High' %}
+                  ⚠️ Requires urgent intervention — contact heritage authority
+                {% elif prediction == 'Medium' %}
+                  🔶 Preventive maintenance recommended in the short term
                 {% else %}
-                  ✅ Estado estable — continuar con monitoreo periódico
+                  ✅ Stable condition — continue with periodic monitoring
                 {% endif %}
               </div>
             </div>

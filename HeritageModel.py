@@ -25,7 +25,7 @@ def get_heritage_info():
     }
 
 def predict_deterioration_risk(edad, material, precipitacion, humedad, pm10, distancia_via):
-    """Simulación simple de riesgo (se puede mejorar después con un modelo real)"""
+    """Simple risk simulation (can be improved later with a real trained model)"""
     risk_score = 0
     if edad > 200: risk_score += 30
     if precipitacion > 1500: risk_score += 25
