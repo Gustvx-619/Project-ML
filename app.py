@@ -13,6 +13,10 @@ def index():
 def crisp_ml():
     return render_template("crisp_ml.html")
 
+@app.route('/data-engineering')
+def data_engineering():
+    return render_template('data_engineering.html')
+
 
 @app.route('/heritage-application', methods=["GET", "POST"])
 def heritage_application():

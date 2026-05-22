@@ -1,0 +1,399 @@
+{% extends "layout.html" %}
+{% block title %}Data Engineering — PatrimonioCO{% endblock %}
+
+{% block extra_head %}
+<style>
+.de-hero { padding:5rem 0 3.5rem; position:relative; overflow:hidden; }
+.de-hero::before {
+    content:''; position:absolute; inset:0;
+    background: radial-gradient(ellipse 65% 55% at 70% 35%, rgba(138,99,210,.2) 0%, transparent 65%),
+                radial-gradient(ellipse 40% 40% at 10% 80%, rgba(201,168,76,.12) 0%, transparent 55%);
+    pointer-events:none;
+}
+.de-hero .container { position:relative; z-index:1; }
+.content-sec { padding:4rem 0; border-top:1px solid var(--border2); }
+.content-sec.dark { background:var(--surface); }
+.phase-num { font-family:'DM Mono',monospace; font-size:.65rem; letter-spacing:.2em; text-transform:uppercase; color:var(--violet); margin-bottom:.4rem; }
+.block-title { font-family:'Cormorant Garamond',serif; font-size:1.6rem; font-weight:600; color:var(--text); margin-bottom:.75rem; }
+.block-body { font-size:.88rem; color:var(--muted); line-height:1.8; }
+.block-body strong { color:var(--violet-lt); }
+
+/* Code block */
+.code-block {
+    background:var(--surface3); border:1px solid var(--border);
+    border-radius:10px; padding:1.25rem 1.5rem;
+    font-family:'DM Mono',monospace; font-size:.78rem;
+    line-height:1.7; color:#c8c0e8; overflow-x:auto;
+    margin:1rem 0;
+}
+.code-block .kw { color:#b48ef0; }
+.code-block .fn { color:#8be9fd; }
+.code-block .st { color:#f1fa8c; }
+.code-block .cm { color:#6a6780; font-style:italic; }
+.code-block .nu { color:#c9a84c; }
+
+/* Step cards */
+.step-card {
+    background:var(--surface2); border:1px solid var(--border);
+    border-left:3px solid var(--violet); border-radius:10px;
+    padding:1.25rem 1.5rem; margin-bottom:1rem;
+}
+.step-card.gold { border-left-color:var(--gold); }
+.step-num { font-family:'DM Mono',monospace; font-size:.62rem; letter-spacing:.15em; text-transform:uppercase; color:var(--violet); margin-bottom:.4rem; }
+.step-num.gold { color:var(--gold); }
+.step-title { font-family:'Cormorant Garamond',serif; font-size:1.05rem; font-weight:600; color:var(--text); margin-bottom:.5rem; }
+.step-body { font-size:.83rem; color:var(--muted); line-height:1.65; }
+
+/* Before/After table */
+.ba-table { width:100%; border-collapse:collapse; font-size:.82rem; margin-top:1rem; }
+.ba-table th { font-family:'DM Mono',monospace; font-size:.62rem; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); padding:.6rem .9rem; border-bottom:1px solid var(--border); text-align:left; }
+.ba-table td { padding:.6rem .9rem; border-bottom:1px solid var(--border2); color:var(--text); }
+.ba-table td.before { color:#f87171; font-family:'DM Mono',monospace; font-size:.75rem; }
+.ba-table td.after { color:#4ade80; font-family:'DM Mono',monospace; font-size:.75rem; }
+
+/* Encoding pills */
+.enc-grid { display:flex; flex-wrap:wrap; gap:.5rem; margin-top:.75rem; }
+.enc-pill { font-family:'DM Mono',monospace; font-size:.68rem; padding:.3rem .75rem; border-radius:999px; border:1px solid var(--border); color:var(--text); background:var(--surface3); }
+.enc-pill.new { background:rgba(138,99,210,.15); border-color:rgba(138,99,210,.3); color:var(--violet-lt); }
+
+/* Scaler table */
+.scale-table { width:100%; border-collapse:collapse; font-size:.8rem; }
+.scale-table th { font-family:'DM Mono',monospace; font-size:.6rem; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); padding:.55rem .8rem; border-bottom:1px solid var(--border); text-align:right; }
+.scale-table th:first-child { text-align:left; }
+.scale-table td { padding:.55rem .8rem; border-bottom:1px solid var(--border2); color:var(--muted); text-align:right; font-family:'DM Mono',monospace; font-size:.75rem; }
+.scale-table td:first-child { text-align:left; color:var(--text); font-family:'Outfit',sans-serif; font-size:.82rem; }
+.scale-table td.highlight { color:var(--gold); }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- HERO -->
+<section class="de-hero">
+  <div class="container">
+    <p class="phase-num"><i class="bi bi-gear me-1"></i>Fase 2 · CRISP-ML</p>
+    <h1 style="font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,4vw,3rem);font-weight:600;color:var(--text);line-height:1.15;">
+      Data <em style="color:var(--violet-lt);font-style:italic;">Engineering</em>
+    </h1>
+    <p style="font-size:.93rem;color:var(--muted);line-height:1.78;max-width:560px;margin-top:1rem;">
+      Limpieza, transformación, encoding, feature engineering y normalización del dataset
+      de 1.200 BIC para maximizar el potencial predictivo del modelo.
+    </p>
+  </div>
+</section>
+
+<!-- LIMPIEZA -->
+<section class="content-sec" id="limpieza">
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-lg-4 fade-up">
+        <p class="phase-num">01</p>
+        <h2 class="block-title">Limpieza de Datos</h2>
+        <p class="block-body">Se aplicaron reglas lógicas estrictas para garantizar la integridad del dataset antes del modelado.</p>
+      </div>
+      <div class="col-lg-8 fade-up d1">
+        <div class="step-card">
+          <div class="step-num">Regla 01</div>
+          <div class="step-title">Corrección de valores negativos en PM10</div>
+          <div class="step-body">Se detectaron valores negativos en PM10_Promedio_ugm3 (mín: -13.5 μg/m³), físicamente imposibles. Se reemplazan con el valor mínimo válido de 0.</div>
+        </div>
+        <div class="code-block">
+<span class="cm"># Regla 1: PM10 no puede ser negativo</span>
+df[<span class="st">'PM10_Promedio_ugm3'</span>] = df[<span class="st">'PM10_Promedio_ugm3'</span>].<span class="fn">clip</span>(lower=<span class="nu">0</span>)
+<span class="cm"># Verificación</span>
+<span class="fn">print</span>(df[<span class="st">'PM10_Promedio_ugm3'</span>].min())  <span class="cm"># → 0.0</span>
+        </div>
+
+        <div class="step-card" style="margin-top:1.5rem;">
+          <div class="step-num">Regla 02</div>
+          <div class="step-title">Validación de rango de edad estructural</div>
+          <div class="step-body">Se valida que todas las estructuras tengan entre 50 y 450 años, rango históricamente plausible para BIC colombianos. Se detectaron 3 outliers extremos.</div>
+        </div>
+        <div class="code-block">
+<span class="cm"># Regla 2: Edad entre 50 y 450 años</span>
+df = df[df[<span class="st">'Edad_Estructura_Anios'</span>].<span class="fn">between</span>(<span class="nu">50</span>, <span class="nu">450</span>)]
+<span class="fn">print</span>(f<span class="st">"Registros válidos: {len(df)}"</span>)  <span class="cm"># → 1197</span>
+        </div>
+
+        <div class="step-card" style="margin-top:1.5rem;">
+          <div class="step-num">Regla 03</div>
+          <div class="step-title">Verificación de ausencia de valores nulos</div>
+          <div class="step-body">Se confirma que el dataset no contiene valores NaN en ninguna columna. Resultado: 0 nulos en las 11 variables.</div>
+        </div>
+        <div class="code-block">
+<span class="cm"># Regla 3: Sin valores nulos</span>
+<span class="fn">print</span>(df.<span class="fn">isnull</span>().<span class="fn">sum</span>())  <span class="cm"># → todos 0</span>
+<span class="fn">assert</span> df.<span class="fn">isnull</span>().<span class="fn">sum</span>().<span class="fn">sum</span>() == <span class="nu">0</span>, <span class="st">"Error: hay valores nulos"</span>
+        </div>
+
+        <div class="step-card" style="margin-top:1.5rem;">
+          <div class="step-num">Regla 04</div>
+          <div class="step-title">Validación de humedad relativa ≤ 100%</div>
+          <div class="step-body">Se verifica que la humedad relativa no supere el 100%, límite físico absoluto. El dataset cumple esta condición (máx: 99.4%).</div>
+        </div>
+        <div class="code-block">
+<span class="cm"># Regla 4: Humedad ≤ 100%</span>
+<span class="fn">assert</span> df[<span class="st">'Humedad_Prom_Anual_pct'</span>].max() <= <span class="nu">100</span>
+<span class="fn">print</span>(f<span class="st">"Humedad máx: {df['Humedad_Prom_Anual_pct'].max()}"</span>)  <span class="cm"># → 99.4</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ENCODING -->
+<section class="content-sec dark" id="encoding">
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-lg-4 fade-up">
+        <p class="phase-num">02</p>
+        <h2 class="block-title">Codificación de Variables Categóricas</h2>
+        <p class="block-body">Los algoritmos de ML requieren entradas numéricas. Se aplica <strong>One-Hot Encoding</strong> a Material_Principal y Ciudad, generando 16 columnas binarias nuevas.</p>
+      </div>
+      <div class="col-lg-8 fade-up d1">
+        <div class="code-block">
+<span class="cm"># One-Hot Encoding — Material_Principal y Ciudad</span>
+<span class="kw">from</span> sklearn.preprocessing <span class="kw">import</span> OneHotEncoder
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+
+df_encoded = pd.<span class="fn">get_dummies</span>(
+    df,
+    columns=[<span class="st">'Material_Principal'</span>, <span class="st">'Ciudad'</span>],
+    prefix=[<span class="st">'mat'</span>, <span class="st">'city'</span>],
+    drop_first=<span class="kw">False</span>
+)
+<span class="fn">print</span>(f<span class="st">"Columnas antes: 11 → después: {df_encoded.shape[1]}"</span>)  <span class="cm"># → 27</span>
+        </div>
+        <p class="block-body" style="margin:.75rem 0 .5rem;">Variables originales (eliminadas tras encoding):</p>
+        <div class="enc-grid">
+          <span class="enc-pill">Material_Principal</span>
+          <span class="enc-pill">Ciudad</span>
+        </div>
+        <p class="block-body" style="margin:1rem 0 .5rem;">16 columnas binarias generadas:</p>
+        <div class="enc-grid">
+          <span class="enc-pill new">mat_Adobe_Tapia</span>
+          <span class="enc-pill new">mat_Ladrillo</span>
+          <span class="enc-pill new">mat_Mamposteria</span>
+          <span class="enc-pill new">mat_Piedra_Concreto</span>
+          <span class="enc-pill new">mat_Piedra_Coralina</span>
+          <span class="enc-pill new">mat_Piedra_Ladrillo</span>
+          <span class="enc-pill new">city_Barichara</span>
+          <span class="enc-pill new">city_Bogotá</span>
+          <span class="enc-pill new">city_Cali</span>
+          <span class="enc-pill new">city_Cartagena</span>
+          <span class="enc-pill new">city_Medellín</span>
+          <span class="enc-pill new">city_Mompox</span>
+          <span class="enc-pill new">city_Popayán</span>
+          <span class="enc-pill new">city_Santa Marta</span>
+          <span class="enc-pill new">city_Tunja</span>
+          <span class="enc-pill new">city_Villa de Leyva</span>
+        </div>
+        <p class="block-body mt-3">La variable objetivo <strong>Nivel_Deterioro_Actual</strong> se codifica con Label Encoding: Bajo=0, Medio=1, Alto=2.</p>
+        <div class="code-block">
+<span class="cm"># Label Encoding para variable objetivo</span>
+<span class="kw">from</span> sklearn.preprocessing <span class="kw">import</span> LabelEncoder
+le = <span class="fn">LabelEncoder</span>()
+df[<span class="st">'target'</span>] = le.<span class="fn">fit_transform</span>(df[<span class="st">'Nivel_Deterioro_Actual'</span>])
+<span class="cm"># Bajo→0, Medio→1, Alto→2</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURE ENGINEERING -->
+<section class="content-sec" id="feature-engineering">
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-lg-4 fade-up">
+        <p class="phase-num">03</p>
+        <h2 class="block-title">Feature Engineering</h2>
+        <p class="block-body">Se crean 2 nuevas variables que capturan <strong>riesgos sinérgicos</strong> no representados por las variables individuales.</p>
+      </div>
+      <div class="col-lg-8 fade-up d1">
+        <div class="step-card gold">
+          <div class="step-num gold">Nueva variable 01</div>
+          <div class="step-title">Índice de Lluvia Ácida</div>
+          <div class="step-body">Combina precipitación anual y PM10 para estimar el impacto de la lluvia ácida sobre los materiales de construcción. A mayor precipitación y mayor contaminación, mayor riesgo de erosión química.</div>
+        </div>
+        <div class="code-block">
+<span class="cm"># Feature 1: Índice de Lluvia Ácida</span>
+df[<span class="st">'Indice_Lluvia_Acida'</span>] = (
+    df[<span class="st">'Precipitacion_Anual_mm'</span>] * df[<span class="st">'PM10_Promedio_ugm3'</span>]
+) / <span class="nu">1000</span>
+<span class="cm"># Media: 40.61 | Std: 31.10 | Rango: 0 – 153.07</span>
+        </div>
+
+        <div class="step-card gold" style="margin-top:1.25rem;">
+          <div class="step-num gold">Nueva variable 02</div>
+          <div class="step-title">Índice de Riesgo por Vibración</div>
+          <div class="step-body">Relaciona la edad de la estructura con su proximidad a vías de alto tráfico. Estructuras más antiguas y más cercanas a vías tienen mayor susceptibilidad al daño por vibración mecánica.</div>
+        </div>
+        <div class="code-block">
+<span class="cm"># Feature 2: Índice de Riesgo por Vibración</span>
+df[<span class="st">'Riesgo_Vibracion'</span>] = (
+    df[<span class="st">'Edad_Estructura_Anios'</span>] / df[<span class="st">'Distancia_Via_Principal_m'</span>]
+).<span class="fn">round</span>(<span class="nu">3</span>)
+<span class="cm"># Media: 7.13 | Std: 16.79 | Rango: 0.07 – 154.0</span>
+        </div>
+
+        <div class="glass-card mt-3">
+          <div class="card-label mb-2">Resumen de nuevas features</div>
+          <table class="scale-table">
+            <thead><tr><th>Variable</th><th>Media</th><th>Std</th><th>Mín</th><th>Máx</th></tr></thead>
+            <tbody>
+              <tr><td>Indice_Lluvia_Acida</td><td class="highlight">40.61</td><td>31.10</td><td>0.00</td><td>153.07</td></tr>
+              <tr><td>Riesgo_Vibracion</td><td class="highlight">7.13</td><td>16.79</td><td>0.07</td><td>154.00</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SELECCIÓN DE FEATURES -->
+<section class="content-sec dark" id="seleccion">
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-lg-4 fade-up">
+        <p class="phase-num">04</p>
+        <h2 class="block-title">Selección de Features</h2>
+        <p class="block-body">Se justifica la selección de las variables utilizadas por el modelo predictivo, descartando identificadores y variables no relevantes.</p>
+      </div>
+      <div class="col-lg-8 fade-up d1">
+        <div class="overflow-auto">
+          <table class="ba-table">
+            <thead>
+              <tr><th>Variable</th><th>¿Incluida?</th><th>Justificación</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Edad_Estructura_Anios</td><td class="after">✅ Sí</td><td style="font-size:.8rem;color:var(--muted);">Variable histórica clave. Mayor edad = mayor exposición acumulada.</td></tr>
+              <tr><td>Material_Principal</td><td class="after">✅ Sí</td><td style="font-size:.8rem;color:var(--muted);">Determina resistencia química y mecánica de la estructura.</td></tr>
+              <tr><td>Precipitacion_Anual_mm</td><td class="after">✅ Sí</td><td style="font-size:.8rem;color:var(--muted);">Principal agente de erosión hídrica en materiales porosos.</td></tr>
+              <tr><td>Humedad_Prom_Anual_pct</td><td class="after">✅ Sí</td><td style="font-size:.8rem;color:var(--muted);">Favorece hongos, eflorescencias y corrosión de estructuras metálicas.</td></tr>
+              <tr><td>PM10_Promedio_ugm3</td><td class="after">✅ Sí</td><td style="font-size:.8rem;color:var(--muted);">Contaminante relacionado con lluvia ácida y depósito de partículas.</td></tr>
+              <tr><td>Distancia_Via_Principal_m</td><td class="after">✅ Sí</td><td style="font-size:.8rem;color:var(--muted);">Proxy de vibración mecánica por tráfico vehicular.</td></tr>
+              <tr><td>Indice_Lluvia_Acida</td><td class="after">✅ Sí</td><td style="font-size:.8rem;color:var(--muted);">Feature engineered: captura sinergia entre precipitación y PM10.</td></tr>
+              <tr><td>Riesgo_Vibracion</td><td class="after">✅ Sí</td><td style="font-size:.8rem;color:var(--muted);">Feature engineered: captura sinergia entre edad y proximidad a vías.</td></tr>
+              <tr><td>ID_Edificacion</td><td class="before">❌ No</td><td style="font-size:.8rem;color:var(--muted);">Identificador único. No aporta valor predictivo.</td></tr>
+              <tr><td>Nombre_Patrimonio</td><td class="before">❌ No</td><td style="font-size:.8rem;color:var(--muted);">Nombre descriptivo. No aporta valor predictivo.</td></tr>
+              <tr><td>Departamento</td><td class="before">❌ No</td><td style="font-size:.8rem;color:var(--muted);">Redundante con Ciudad. Alta cardinalidad sin valor adicional.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- NORMALIZACIÓN -->
+<section class="content-sec" id="normalizacion">
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-lg-4 fade-up">
+        <p class="phase-num">05</p>
+        <h2 class="block-title">Normalización y Escalamiento</h2>
+        <p class="block-body">Las variables numéricas tienen rangos muy distintos (2m a 672m vs. 51% a 99%). Se aplica <strong>Min-Max Scaler</strong> para llevar todas al rango [0, 1].</p>
+      </div>
+      <div class="col-lg-8 fade-up d1">
+        <div class="code-block">
+<span class="cm"># Normalización Min-Max — variables numéricas</span>
+<span class="kw">from</span> sklearn.preprocessing <span class="kw">import</span> MinMaxScaler
+
+numeric_cols = [
+    <span class="st">'Edad_Estructura_Anios'</span>, <span class="st">'Precipitacion_Anual_mm'</span>,
+    <span class="st">'Humedad_Prom_Anual_pct'</span>, <span class="st">'PM10_Promedio_ugm3'</span>,
+    <span class="st">'Distancia_Via_Principal_m'</span>, <span class="st">'Indice_Lluvia_Acida'</span>,
+    <span class="st">'Riesgo_Vibracion'</span>
+]
+
+scaler = <span class="fn">MinMaxScaler</span>()
+df[numeric_cols] = scaler.<span class="fn">fit_transform</span>(df[numeric_cols])
+<span class="cm"># Resultado: todas las variables en rango [0.0, 1.0]</span>
+        </div>
+        <div class="glass-card mt-3">
+          <div class="card-label mb-2">Resultado tras normalización Min-Max</div>
+          <table class="scale-table">
+            <thead><tr><th>Variable</th><th>Media norm.</th><th>Std norm.</th><th>Mín</th><th>Máx</th></tr></thead>
+            <tbody>
+              <tr><td>Edad_Estructura_Anios</td><td class="highlight">0.301</td><td>0.216</td><td>0.000</td><td>1.000</td></tr>
+              <tr><td>Precipitacion_Anual_mm</td><td class="highlight">0.408</td><td>0.230</td><td>0.000</td><td>1.000</td></tr>
+              <tr><td>Humedad_Prom_Anual_pct</td><td class="highlight">0.455</td><td>0.189</td><td>0.000</td><td>1.000</td></tr>
+              <tr><td>PM10_Promedio_ugm3</td><td class="highlight">0.451</td><td>0.193</td><td>0.000</td><td>1.000</td></tr>
+              <tr><td>Distancia_Via_Principal_m</td><td class="highlight">0.141</td><td>0.143</td><td>0.000</td><td>1.000</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="block-body mt-3" style="font-size:.8rem;">✅ Todas las variables quedan en [0, 1]. El escalador se guarda con joblib para aplicar la misma transformación en predicción sin reentrenar.</p>
+        <div class="code-block" style="margin-top:.75rem;">
+<span class="cm"># Guardar el escalador para producción</span>
+<span class="kw">import</span> joblib
+joblib.<span class="fn">dump</span>(scaler, <span class="st">'models/scaler_minmax.pkl'</span>)
+<span class="cm"># Cargar en predicción: scaler = joblib.load('models/scaler_minmax.pkl')</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DOCUMENTACIÓN -->
+<section class="content-sec dark" id="documentacion">
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-lg-4 fade-up">
+        <p class="phase-num">06</p>
+        <h2 class="block-title">Documentación del Proceso</h2>
+        <p class="block-body">Registro completo de configuraciones para garantizar la <strong>reproducibilidad total</strong> del proceso de ingeniería de datos.</p>
+      </div>
+      <div class="col-lg-8 fade-up d1">
+        <div class="code-block">
+<span class="cm"># ─── Configuración de reproducibilidad ───</span>
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">import</span> random
+
+RANDOM_SEED = <span class="nu">42</span>
+np.random.<span class="fn">seed</span>(RANDOM_SEED)
+random.<span class="fn">seed</span>(RANDOM_SEED)
+
+<span class="cm"># ─── Resumen del pipeline completo ───</span>
+pipeline_log = {
+    <span class="st">"dataset"</span>: <span class="st">"dataset_patrimonio_colombia_1200.csv"</span>,
+    <span class="st">"registros_originales"</span>: <span class="nu">1200</span>,
+    <span class="st">"registros_tras_limpieza"</span>: <span class="nu">1197</span>,
+    <span class="st">"transformaciones"</span>: [
+        <span class="st">"clip PM10 >= 0"</span>,
+        <span class="st">"filter edad [50, 450]"</span>,
+        <span class="st">"one-hot Material_Principal"</span>,
+        <span class="st">"one-hot Ciudad"</span>,
+        <span class="st">"label-encode Nivel_Deterioro_Actual"</span>,
+        <span class="st">"feature: Indice_Lluvia_Acida"</span>,
+        <span class="st">"feature: Riesgo_Vibracion"</span>,
+        <span class="st">"minmax scale numeric vars"</span>
+    ],
+    <span class="st">"scaler"</span>: <span class="st">"MinMaxScaler → models/scaler_minmax.pkl"</span>,
+    <span class="st">"random_seed"</span>: RANDOM_SEED
+}
+        </div>
+        <div class="row g-3 mt-2">
+          <div class="col-md-6">
+            <div class="step-card">
+              <div class="step-num">Antes del pipeline</div>
+              <div class="step-title">Estado inicial</div>
+              <div class="step-body">1.200 registros · 11 columnas · PM10 con negativos · sin encoding · sin normalizar · 0 nulos</div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="step-card gold">
+              <div class="step-num gold">Después del pipeline</div>
+              <div class="step-title">Dataset listo para ML</div>
+              <div class="step-body">1.197 registros · 27 columnas · PM10 corregido · One-Hot aplicado · 7 vars normalizadas · 2 features nuevas</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
