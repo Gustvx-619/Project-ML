@@ -13,9 +13,20 @@ def index():
 def crisp_ml():
     return render_template("crisp_ml.html")
 
+
+@app.route('/business-understanding')
+def business_understanding():
+    return render_template("business_understanding.html")
+
+
+@app.route('/data-understanding')
+def data_understanding():
+    return render_template("data_understanding.html")
+
+
 @app.route('/data-engineering')
 def data_engineering():
-    return render_template('data_engineering.html')
+    return render_template("data_engineering.html")
 
 
 @app.route('/heritage-application', methods=["GET", "POST"])
@@ -35,12 +46,9 @@ def heritage_application():
                 "distancia_via": float(request.form.get("distancia_via")),
             }
             prediction = HeritageModel.predict_deterioration_risk(
-                form_data["edad"],
-                form_data["material"],
-                form_data["precipitacion"],
-                form_data["humedad"],
-                form_data["pm10"],
-                form_data["distancia_via"]
+                form_data["edad"], form_data["material"],
+                form_data["precipitacion"], form_data["humedad"],
+                form_data["pm10"], form_data["distancia_via"]
             )
         except Exception as e:
             print("Error:", e)
