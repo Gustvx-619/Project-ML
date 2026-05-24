@@ -29,6 +29,12 @@ def data_engineering():
     return render_template("data_engineering.html")
 
 
+@app.route('/model-engineering')
+def model_engineering():
+    metrics = HeritageModel.get_model_metrics()
+    return render_template("model_engineering.html", metrics=metrics)
+
+
 @app.route('/heritage-application', methods=["GET", "POST"])
 def heritage_application():
     model_info = HeritageModel.get_heritage_info()
@@ -38,18 +44,22 @@ def heritage_application():
     if request.method == "POST":
         try:
             form_data = {
-                "edad": float(request.form.get("edad")),
-                "material": request.form.get("material"),
-                "precipitacion": float(request.form.get("precipitacion")),
-                "humedad": float(request.form.get("humedad")),
-                "pm10": float(request.form.get("pm10")),
-                "distancia_via": float(request.form.get("distancia_via")),
+                "age":           float(request.form.get("age")),
+                "material":      request.form.get("material"),
+                "precipitation": float(request.form.get("precipitation")),
+                "humidity":      float(request.form.get("humidity")),
+                "pm10":          float(request.form.get("pm10")),
+                "road_distance": float(request.form.get("road_distance")),
             }
-            prediction = HeritageModel.predict_deterioration_risk(
-                form_data["edad"], form_data["material"],
-                form_data["precipitacion"], form_data["humedad"],
-                form_data["pm10"], form_data["distancia_via"]
+            label, confidence = HeritageModel.predict_deterioration_risk(
+                age=form_data["age"],
+                material=form_data["material"],
+                precipitation=form_data["precipitation"],
+                humidity=form_data["humidity"],
+                pm10=form_data["pm10"],
+                road_distance=form_data["road_distance"]
             )
+            prediction = (label, confidence)
         except Exception as e:
             print("Error:", e)
             prediction = "Error en los datos"
