@@ -219,9 +219,9 @@
 
             <div class="col-md-6">
               <label class="form-label">Structure Age</label>
-              <input type="number" name="edad" class="form-control"
+              <input type="number" name="age" class="form-control"
                      placeholder="Ej: 150" min="1" max="500"
-                     value="{{ form_data.get('edad', '') }}" required>
+                     value="{{ form_data.get('age', '') }}" required>
               <div class="form-text">Years of age (50–450 years)</div>
             </div>
 
@@ -229,12 +229,12 @@
               <label class="form-label">Main Material</label>
               <select name="material" class="form-select" required>
                 <option value="" disabled {% if not form_data.get('material') %}selected{% endif %}>Select material...</option>
-                <option value="Piedra_Brick" {% if form_data.get('material')=='Piedra_Brick' %}selected{% endif %}>Stone Brick</option>
-                <option value="Piedra_Coralina" {% if form_data.get('material')=='Piedra_Coralina' %}selected{% endif %}>Coral Stone</option>
-                <option value="Piedra_Concreto" {% if form_data.get('material')=='Piedra_Concreto' %}selected{% endif %}>Stone Concrete</option>
+                <option value="Piedra_Ladrillo" {% if form_data.get('material')=='Piedra_Ladrillo' %}selected{% endif %}>Piedra Ladrillo</option>
+                <option value="Piedra_Coralina" {% if form_data.get('material')=='Piedra_Coralina' %}selected{% endif %}>Piedra Coralina</option>
+                <option value="Piedra_Concreto" {% if form_data.get('material')=='Piedra_Concreto' %}selected{% endif %}>Piedra Concreto</option>
                 <option value="Adobe_Tapia"     {% if form_data.get('material')=='Adobe_Tapia'     %}selected{% endif %}>Adobe / Rammed Earth</option>
                 <option value="Mamposteria"     {% if form_data.get('material')=='Mamposteria'     %}selected{% endif %}>Masonry</option>
-                <option value="Brick"        {% if form_data.get('material')=='Brick'        %}selected{% endif %}>Brick</option>
+                <option value="Ladrillo"        {% if form_data.get('material')=='Ladrillo'        %}selected{% endif %}>Ladrillo</option>
               </select>
             </div>
 
@@ -245,17 +245,17 @@
 
             <div class="col-md-6">
               <label class="form-label">Annual Precipitation</label>
-              <input type="number" name="precipitacion" class="form-control"
+              <input type="number" name="precipitation" class="form-control"
                      placeholder="Ej: 1200" min="0" max="5000"
-                     value="{{ form_data.get('precipitacion', '') }}" required>
+                     value="{{ form_data.get('precipitation', '') }}" required>
               <div class="form-text">Millimeters per year</div>
             </div>
 
             <div class="col-md-6">
               <label class="form-label">Relative Humidity</label>
-              <input type="number" name="humedad" class="form-control"
+              <input type="number" name="humidity" class="form-control"
                      placeholder="Ej: 75" min="0" max="100" step="0.1"
-                     value="{{ form_data.get('humedad', '') }}" required>
+                     value="{{ form_data.get('humidity', '') }}" required>
               <div class="form-text">Average annual percentage (%)</div>
             </div>
 
@@ -274,9 +274,9 @@
 
             <div class="col-md-6">
               <label class="form-label">Distance to Main Road</label>
-              <input type="number" name="distancia_via" class="form-control"
+              <input type="number" name="road_distance" class="form-control"
                      placeholder="Ej: 80" min="0" max="1000" step="0.1"
-                     value="{{ form_data.get('distancia_via', '') }}" required>
+                     value="{{ form_data.get('road_distance', '') }}" required>
               <div class="form-text">Meters to the nearest road</div>
             </div>
 
@@ -291,13 +291,13 @@
 
           {% if prediction %}
           <div class="mt-4">
-            <div class="result-box {{ 'alto' if prediction=='High' else ('medio' if prediction=='Medium' else 'bajo') }}">
+            <div class="result-box {{ 'alto' if prediction=='Alto' else ('medio' if prediction=='Medio' else 'bajo') }}">
               <div class="result-label">Estimated Risk</div>
               <div class="result-value">{{ prediction }}</div>
               <div class="result-msg">
-                {% if prediction == 'High' %}
+                {% if prediction == 'Alto' %}
                   ⚠️ Requires urgent intervention — contact heritage authority
-                {% elif prediction == 'Medium' %}
+                {% elif prediction == 'Medio' %}
                   🔶 Preventive maintenance recommended in the short term
                 {% else %}
                   ✅ Stable condition — continue with periodic monitoring
