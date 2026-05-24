@@ -99,55 +99,55 @@
       <div class="col-12 fade-up">
         <p class="phase-num">02</p>
         <h2 class="block-title">Variable Analysis</h2>
-        <p class="block-body" style="max-width:600px;">The dataset includes 5 continuous numerical variables, 4 categorical variables, and 2 identifiers. The target variable is <strong>Nivel_Deterioro_Actual</strong>.</p>
+        <p class="block-body" style="max-width:600px;">The dataset includes 5 continuous numerical variables, 4 categorical variables, and 2 identifiers. The target variable is <strong>Current_Deterioration_Level</strong>.</p>
       </div>
     </div>
     <div class="var-grid fade-up d1">
       <div class="var-card">
         <span class="var-type num">Numerical</span>
-        <div class="var-name">Edad_Estructura_Anios</div>
+        <div class="var-name">Structure_Age_Years</div>
         <div class="var-body">Age in years of the heritage building. Key historical variable.</div>
         <div class="var-range">Range: 50 – 385 years · Mean: 150.7</div>
       </div>
       <div class="var-card">
         <span class="var-type num">Numerical</span>
-        <div class="var-name">Precipitacion_Anual_mm</div>
+        <div class="var-name">Annual_Precipitation_mm</div>
         <div class="var-body">Average annual precipitation in millimeters. Source: IDEAM stations.</div>
         <div class="var-range">Range: 472 – 2,260 mm · Mean: 1,202</div>
       </div>
       <div class="var-card">
         <span class="var-type num">Numerical</span>
-        <div class="var-name">Humedad_Prom_Anual_pct</div>
+        <div class="var-name">Avg_Annual_Humidity_pct</div>
         <div class="var-body">Average annual relative humidity percentage. Accelerates corrosion and mold growth.</div>
         <div class="var-range">Range: 51.7% – 99.4% · Mean: 73.4%</div>
       </div>
       <div class="var-card">
         <span class="var-type num">Numerical</span>
-        <div class="var-name">PM10_Promedio_ugm3</div>
+        <div class="var-name">PM10_Avg_ugm3</div>
         <div class="var-body">Particulate matter concentration (μg/m³). Related to acid rain formation.</div>
         <div class="var-range">Range: -13.5* – 88.2 · Mean: 32.4</div>
       </div>
       <div class="var-card">
         <span class="var-type num">Numerical</span>
-        <div class="var-name">Distancia_Via_Principal_m</div>
+        <div class="var-name">Main_Road_Distance_m</div>
         <div class="var-body">Distance in meters to the nearest vehicular road. Indicates vibration risk.</div>
         <div class="var-range">Range: 2 – 672 m · Mean: 96.5 m</div>
       </div>
       <div class="var-card">
         <span class="var-type cat">Categorical</span>
-        <div class="var-name">Material_Principal</div>
+        <div class="var-name">Main_Material</div>
         <div class="var-body">Dominant construction material: Piedra_Coralina, Ladrillo, Adobe_Tapia, Mamposteria, Piedra_Concreto, Piedra_Ladrillo.</div>
         <div class="var-range">6 categories · 190–219 records each</div>
       </div>
       <div class="var-card">
         <span class="var-type cat">Categorical</span>
-        <div class="var-name">Ciudad</div>
+        <div class="var-name">City</div>
         <div class="var-body">Colombian city where the BIC is located: Medellín, Bogotá, Cali, Cartagena, Santa Marta, among others.</div>
         <div class="var-range">10 cities · 101–136 records each</div>
       </div>
       <div class="var-card">
         <span class="var-type cat">Categorical — Target</span>
-        <div class="var-name">Nivel_Deterioro_Actual</div>
+        <div class="var-name">Current_Deterioration_Level</div>
         <div class="var-body">Target variable for the classification model. Represents the current structural deterioration state.</div>
         <div class="var-range">Low: 713 · Medium: 469 · High: 18</div>
       </div>
@@ -182,11 +182,11 @@
           </tr>
         </thead>
         <tbody>
-          <tr><td>Edad_Estructura_Anios</td><td class="num">1200</td><td class="num">150.74</td><td class="num">72.43</td><td class="num">50</td><td class="num">91</td><td class="num">148.5</td><td class="num">200</td><td class="num">385</td></tr>
-          <tr><td>Precipitacion_Anual_mm</td><td class="num">1200</td><td class="num">1202.27</td><td class="num">411.51</td><td class="num">472.4</td><td class="num">910.1</td><td class="num">1091.6</td><td class="num">1474.2</td><td class="num">2260.4</td></tr>
-          <tr><td>Humedad_Prom_Anual_pct</td><td class="num">1200</td><td class="num">73.41</td><td class="num">9.00</td><td class="num">51.7</td><td class="num">66.2</td><td class="num">73.5</td><td class="num">80.3</td><td class="num">99.4</td></tr>
-          <tr><td>PM10_Promedio_ugm3</td><td class="num">1200</td><td class="num">32.40</td><td class="num">19.60</td><td class="num">-13.5</td><td class="num">17.2</td><td class="num">29.9</td><td class="num">47.0</td><td class="num">88.2</td></tr>
-          <tr><td>Distancia_Via_Principal_m</td><td class="num">1200</td><td class="num">96.46</td><td class="num">95.99</td><td class="num">2</td><td class="num">27.0</td><td class="num">65.2</td><td class="num">138.6</td><td class="num">672</td></tr>
+          <tr><td>Structure_Age_Years</td><td class="num">1200</td><td class="num">150.74</td><td class="num">72.43</td><td class="num">50</td><td class="num">91</td><td class="num">148.5</td><td class="num">200</td><td class="num">385</td></tr>
+          <tr><td>Annual_Precipitation_mm</td><td class="num">1200</td><td class="num">1202.27</td><td class="num">411.51</td><td class="num">472.4</td><td class="num">910.1</td><td class="num">1091.6</td><td class="num">1474.2</td><td class="num">2260.4</td></tr>
+          <tr><td>Avg_Annual_Humidity_pct</td><td class="num">1200</td><td class="num">73.41</td><td class="num">9.00</td><td class="num">51.7</td><td class="num">66.2</td><td class="num">73.5</td><td class="num">80.3</td><td class="num">99.4</td></tr>
+          <tr><td>PM10_Avg_ugm3</td><td class="num">1200</td><td class="num">32.40</td><td class="num">19.60</td><td class="num">-13.5</td><td class="num">17.2</td><td class="num">29.9</td><td class="num">47.0</td><td class="num">88.2</td></tr>
+          <tr><td>Main_Road_Distance_m</td><td class="num">1200</td><td class="num">96.46</td><td class="num">95.99</td><td class="num">2</td><td class="num">27.0</td><td class="num">65.2</td><td class="num">138.6</td><td class="num">672</td></tr>
         </tbody>
       </table>
     </div>
