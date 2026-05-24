@@ -17,26 +17,46 @@
 .block-title { font-family:'Cormorant Garamond',serif; font-size:1.6rem; font-weight:600; color:var(--text); margin-bottom:.75rem; }
 .block-body { font-size:.88rem; color:var(--muted); line-height:1.8; }
 .block-body strong { color:var(--violet-lt); }
-.code-block { background:var(--surface3); border:1px solid var(--border); border-radius:10px; padding:1.25rem 1.5rem; font-family:'DM Mono',monospace; font-size:.78rem; line-height:1.7; color:#c8c0e8; overflow-x:auto; margin:1rem 0; }
+
+/* Code block */
+.code-block {
+    background:var(--surface3); border:1px solid var(--border);
+    border-radius:10px; padding:1.25rem 1.5rem;
+    font-family:'DM Mono',monospace; font-size:.78rem;
+    line-height:1.7; color:#c8c0e8; overflow-x:auto;
+    margin:1rem 0;
+}
 .code-block .kw { color:#b48ef0; }
 .code-block .fn { color:#8be9fd; }
 .code-block .st { color:#f1fa8c; }
 .code-block .cm { color:#6a6780; font-style:italic; }
 .code-block .nu { color:#c9a84c; }
-.step-card { background:var(--surface2); border:1px solid var(--border); border-left:3px solid var(--violet); border-radius:10px; padding:1.25rem 1.5rem; margin-bottom:1rem; }
+
+/* Step cards */
+.step-card {
+    background:var(--surface2); border:1px solid var(--border);
+    border-left:3px solid var(--violet); border-radius:10px;
+    padding:1.25rem 1.5rem; margin-bottom:1rem;
+}
 .step-card.gold { border-left-color:var(--gold); }
 .step-num { font-family:'DM Mono',monospace; font-size:.62rem; letter-spacing:.15em; text-transform:uppercase; color:var(--violet); margin-bottom:.4rem; }
 .step-num.gold { color:var(--gold); }
 .step-title { font-family:'Cormorant Garamond',serif; font-size:1.05rem; font-weight:600; color:var(--text); margin-bottom:.5rem; }
 .step-body { font-size:.83rem; color:var(--muted); line-height:1.65; }
+
+/* Before/After table */
 .ba-table { width:100%; border-collapse:collapse; font-size:.82rem; margin-top:1rem; }
 .ba-table th { font-family:'DM Mono',monospace; font-size:.62rem; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); padding:.6rem .9rem; border-bottom:1px solid var(--border); text-align:left; }
 .ba-table td { padding:.6rem .9rem; border-bottom:1px solid var(--border2); color:var(--text); }
 .ba-table td.before { color:#f87171; font-family:'DM Mono',monospace; font-size:.75rem; }
 .ba-table td.after { color:#4ade80; font-family:'DM Mono',monospace; font-size:.75rem; }
+
+/* Encoding pills */
 .enc-grid { display:flex; flex-wrap:wrap; gap:.5rem; margin-top:.75rem; }
 .enc-pill { font-family:'DM Mono',monospace; font-size:.68rem; padding:.3rem .75rem; border-radius:999px; border:1px solid var(--border); color:var(--text); background:var(--surface3); }
 .enc-pill.new { background:rgba(138,99,210,.15); border-color:rgba(138,99,210,.3); color:var(--violet-lt); }
+
+/* Scaler table */
 .scale-table { width:100%; border-collapse:collapse; font-size:.8rem; }
 .scale-table th { font-family:'DM Mono',monospace; font-size:.6rem; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); padding:.55rem .8rem; border-bottom:1px solid var(--border); text-align:right; }
 .scale-table th:first-child { text-align:left; }
@@ -48,6 +68,7 @@
 
 {% block content %}
 
+<!-- HERO -->
 <section class="de-hero">
   <div class="container">
     <p class="phase-num"><i class="bi bi-gear me-1"></i>Phase 2 · CRISP-ML</p>
@@ -61,8 +82,8 @@
   </div>
 </section>
 
-<!-- DATA CLEANING -->
-<section class="content-sec" id="limpieza">
+<!-- LIMPIEZA -->
+<section class="content-sec" id="cleaning">
   <div class="container">
     <div class="row g-5">
       <div class="col-lg-4 fade-up">
@@ -74,14 +95,15 @@
         <div class="step-card">
           <div class="step-num">Rule 01</div>
           <div class="step-title">Correction of negative PM10 values</div>
-          <div class="step-body">Negative values were detected in PM10_Promedio_ugm3 (min: -13.5 μg/m³), which are physically impossible. They are replaced with the valid minimum value of 0.</div>
+          <div class="step-body">Negative values were detected in PM10_Avg_ugm3 (min: -13.5 μg/m³), which are physically impossible. They are replaced with the valid minimum value of 0.</div>
         </div>
         <div class="code-block">
 <span class="cm"># Rule 1: PM10 cannot be negative</span>
-df[<span class="st">'PM10_Promedio_ugm3'</span>] = df[<span class="st">'PM10_Promedio_ugm3'</span>].<span class="fn">clip</span>(lower=<span class="nu">0</span>)
+df[<span class="st">'PM10_Avg_ugm3'</span>] = df[<span class="st">'PM10_Avg_ugm3'</span>].<span class="fn">clip</span>(lower=<span class="nu">0</span>)
 <span class="cm"># Verification</span>
-<span class="fn">print</span>(df[<span class="st">'PM10_Promedio_ugm3'</span>].min())  <span class="cm"># → 0.0</span>
+<span class="fn">print</span>(df[<span class="st">'PM10_Avg_ugm3'</span>].min())  <span class="cm"># → 0.0</span>
         </div>
+
         <div class="step-card" style="margin-top:1.5rem;">
           <div class="step-num">Rule 02</div>
           <div class="step-title">Structural age range validation</div>
@@ -89,9 +111,10 @@ df[<span class="st">'PM10_Promedio_ugm3'</span>] = df[<span class="st">'PM10_Pro
         </div>
         <div class="code-block">
 <span class="cm"># Rule 2: Age between 50 and 450 years</span>
-df = df[df[<span class="st">'Edad_Estructura_Anios'</span>].<span class="fn">between</span>(<span class="nu">50</span>, <span class="nu">450</span>)]
+df = df[df[<span class="st">'Structure_Age_Years'</span>].<span class="fn">between</span>(<span class="nu">50</span>, <span class="nu">450</span>)]
 <span class="fn">print</span>(f<span class="st">"Valid records: {len(df)}"</span>)  <span class="cm"># → 1197</span>
         </div>
+
         <div class="step-card" style="margin-top:1.5rem;">
           <div class="step-num">Rule 03</div>
           <div class="step-title">Null value verification</div>
@@ -99,9 +122,10 @@ df = df[df[<span class="st">'Edad_Estructura_Anios'</span>].<span class="fn">bet
         </div>
         <div class="code-block">
 <span class="cm"># Rule 3: No null values</span>
-<span class="fn">print</span>(df.<span class="fn">isnull</span>().<span class="fn">sum</span>())  <span class="cm"># → all 0</span>
+<span class="fn">print</span>(df.<span class="fn">isnull</span>().<span class="fn">sum</span>())  <span class="cm"># → todos 0</span>
 <span class="fn">assert</span> df.<span class="fn">isnull</span>().<span class="fn">sum</span>().<span class="fn">sum</span>() == <span class="nu">0</span>, <span class="st">"Error: null values found"</span>
         </div>
+
         <div class="step-card" style="margin-top:1.5rem;">
           <div class="step-num">Rule 04</div>
           <div class="step-title">Relative humidity ≤ 100% validation</div>
@@ -109,8 +133,8 @@ df = df[df[<span class="st">'Edad_Estructura_Anios'</span>].<span class="fn">bet
         </div>
         <div class="code-block">
 <span class="cm"># Rule 4: Humidity ≤ 100%</span>
-<span class="fn">assert</span> df[<span class="st">'Humedad_Prom_Anual_pct'</span>].max() <= <span class="nu">100</span>
-<span class="fn">print</span>(f<span class="st">"Max humidity: {df['Humedad_Prom_Anual_pct'].max()}"</span>)  <span class="cm"># → 99.4</span>
+<span class="fn">assert</span> df[<span class="st">'Avg_Annual_Humidity_pct'</span>].max() <= <span class="nu">100</span>
+<span class="fn">print</span>(f<span class="st">"Max humidity: {df['Avg_Annual_Humidity_pct'].max()}"</span>)  <span class="cm"># → 99.4</span>
         </div>
       </div>
     </div>
@@ -124,16 +148,17 @@ df = df[df[<span class="st">'Edad_Estructura_Anios'</span>].<span class="fn">bet
       <div class="col-lg-4 fade-up">
         <p class="phase-num">02</p>
         <h2 class="block-title">Categorical Variable Encoding</h2>
-        <p class="block-body">ML algorithms require numerical inputs. <strong>One-Hot Encoding</strong> is applied to Material_Principal and Ciudad, generating 16 new binary columns.</p>
+        <p class="block-body">ML algorithms require numerical inputs. <strong>One-Hot Encoding</strong> is applied to Main_Material and City, generating 16 new binary columns.</p>
       </div>
       <div class="col-lg-8 fade-up d1">
         <div class="code-block">
-<span class="cm"># One-Hot Encoding — Material_Principal and Ciudad</span>
+<span class="cm"># One-Hot Encoding — Main_Material and City</span>
+<span class="kw">from</span> sklearn.preprocessing <span class="kw">import</span> OneHotEncoder
 <span class="kw">import</span> pandas <span class="kw">as</span> pd
 
 df_encoded = pd.<span class="fn">get_dummies</span>(
     df,
-    columns=[<span class="st">'Material_Principal'</span>, <span class="st">'Ciudad'</span>],
+    columns=[<span class="st">'Main_Material'</span>, <span class="st">'City'</span>],
     prefix=[<span class="st">'mat'</span>, <span class="st">'city'</span>],
     drop_first=<span class="kw">False</span>
 )
@@ -141,8 +166,8 @@ df_encoded = pd.<span class="fn">get_dummies</span>(
         </div>
         <p class="block-body" style="margin:.75rem 0 .5rem;">Original variables (removed after encoding):</p>
         <div class="enc-grid">
-          <span class="enc-pill">Material_Principal</span>
-          <span class="enc-pill">Ciudad</span>
+          <span class="enc-pill">Main_Material</span>
+          <span class="enc-pill">City</span>
         </div>
         <p class="block-body" style="margin:1rem 0 .5rem;">16 new binary columns generated:</p>
         <div class="enc-grid">
@@ -163,12 +188,12 @@ df_encoded = pd.<span class="fn">get_dummies</span>(
           <span class="enc-pill new">city_Tunja</span>
           <span class="enc-pill new">city_Villa de Leyva</span>
         </div>
-        <p class="block-body mt-3">The target variable <strong>Nivel_Deterioro_Actual</strong> is encoded with Label Encoding: Low=0, Medium=1, High=2.</p>
+        <p class="block-body mt-3">The target variable <strong>Current_Deterioration_Level</strong> is encoded with Label Encoding: Low=0, Medium=1, High=2.</p>
         <div class="code-block">
 <span class="cm"># Label Encoding for target variable</span>
 <span class="kw">from</span> sklearn.preprocessing <span class="kw">import</span> LabelEncoder
 le = <span class="fn">LabelEncoder</span>()
-df[<span class="st">'target'</span>] = le.<span class="fn">fit_transform</span>(df[<span class="st">'Nivel_Deterioro_Actual'</span>])
+df[<span class="st">'target'</span>] = le.<span class="fn">fit_transform</span>(df[<span class="st">'Current_Deterioration_Level'</span>])
 <span class="cm"># Low→0, Medium→1, High→2</span>
         </div>
       </div>
@@ -189,15 +214,16 @@ df[<span class="st">'target'</span>] = le.<span class="fn">fit_transform</span>(
         <div class="step-card gold">
           <div class="step-num gold">New feature 01</div>
           <div class="step-title">Acid Rain Index</div>
-          <div class="step-body">Combines annual precipitation and PM10 to estimate the impact of acid rain on construction materials. The higher the precipitation and pollution, the greater the risk of chemical erosion.</div>
+          <div class="step-body">Combines annual precipitation and PM10 to estimate the impact of acid rain on construction materials. Higher precipitation and pollution means greater risk of chemical erosion.</div>
         </div>
         <div class="code-block">
 <span class="cm"># Feature 1: Acid Rain Index</span>
-df[<span class="st">'Acid_Rain_Index'</span>] = (
-    df[<span class="st">'Precipitacion_Anual_mm'</span>] * df[<span class="st">'PM10_Promedio_ugm3'</span>]
+df[<span class="st">'Indice_Lluvia_Acida'</span>] = (
+    df[<span class="st">'Annual_Precipitation_mm'</span>] * df[<span class="st">'PM10_Avg_ugm3'</span>]
 ) / <span class="nu">1000</span>
-<span class="cm"># Mean: 40.61 | Std: 31.10 | Range: 0 – 153.07</span>
+<span class="cm"># Media: 40.61 | Std: 31.10 | Rango: 0 – 153.07</span>
         </div>
+
         <div class="step-card gold" style="margin-top:1.25rem;">
           <div class="step-num gold">New feature 02</div>
           <div class="step-title">Vibration Risk Index</div>
@@ -205,18 +231,19 @@ df[<span class="st">'Acid_Rain_Index'</span>] = (
         </div>
         <div class="code-block">
 <span class="cm"># Feature 2: Vibration Risk Index</span>
-df[<span class="st">'Vibration_Risk'</span>] = (
-    df[<span class="st">'Edad_Estructura_Anios'</span>] / df[<span class="st">'Distancia_Via_Principal_m'</span>]
+df[<span class="st">'Riesgo_Vibracion'</span>] = (
+    df[<span class="st">'Structure_Age_Years'</span>] / df[<span class="st">'Main_Road_Distance_m'</span>]
 ).<span class="fn">round</span>(<span class="nu">3</span>)
-<span class="cm"># Mean: 7.13 | Std: 16.79 | Range: 0.07 – 154.0</span>
+<span class="cm"># Media: 7.13 | Std: 16.79 | Rango: 0.07 – 154.0</span>
         </div>
+
         <div class="glass-card mt-3">
           <div class="card-label mb-2">New features summary</div>
           <table class="scale-table">
-            <thead><tr><th>Variable</th><th>Mean</th><th>Std</th><th>Min</th><th>Max</th></tr></thead>
+            <thead><tr><th>Variable</th><th>Media</th><th>Std</th><th>Mín</th><th>Máx</th></tr></thead>
             <tbody>
-              <tr><td>Acid Rain Index</td><td class="highlight">40.61</td><td>31.10</td><td>0.00</td><td>153.07</td></tr>
-              <tr><td>Vibration Risk</td><td class="highlight">7.13</td><td>16.79</td><td>0.07</td><td>154.00</td></tr>
+              <tr><td>Indice_Lluvia_Acida</td><td class="highlight">40.61</td><td>31.10</td><td>0.00</td><td>153.07</td></tr>
+              <tr><td>Riesgo_Vibracion</td><td class="highlight">7.13</td><td>16.79</td><td>0.07</td><td>154.00</td></tr>
             </tbody>
           </table>
         </div>
@@ -225,8 +252,8 @@ df[<span class="st">'Vibration_Risk'</span>] = (
   </div>
 </section>
 
-<!-- FEATURE SELECTION -->
-<section class="content-sec dark" id="seleccion">
+<!-- SELECCIÓN DE FEATURES -->
+<section class="content-sec dark" id="selection">
   <div class="container">
     <div class="row g-5">
       <div class="col-lg-4 fade-up">
@@ -241,17 +268,17 @@ df[<span class="st">'Vibration_Risk'</span>] = (
               <tr><th>Variable</th><th>Included?</th><th>Justification</th></tr>
             </thead>
             <tbody>
-              <tr><td>Edad_Estructura_Anios</td><td class="after">✅ Yes</td><td style="font-size:.8rem;color:var(--muted);">Key historical variable. Older age = greater accumulated exposure.</td></tr>
-              <tr><td>Material_Principal</td><td class="after">✅ Yes</td><td style="font-size:.8rem;color:var(--muted);">Determines chemical and mechanical resistance of the structure.</td></tr>
-              <tr><td>Precipitacion_Anual_mm</td><td class="after">✅ Yes</td><td style="font-size:.8rem;color:var(--muted);">Main agent of water erosion in porous materials.</td></tr>
-              <tr><td>Humedad_Prom_Anual_pct</td><td class="after">✅ Yes</td><td style="font-size:.8rem;color:var(--muted);">Promotes mold, efflorescence, and metal structure corrosion.</td></tr>
-              <tr><td>PM10_Promedio_ugm3</td><td class="after">✅ Yes</td><td style="font-size:.8rem;color:var(--muted);">Pollutant related to acid rain and particulate deposition.</td></tr>
-              <tr><td>Distancia_Via_Principal_m</td><td class="after">✅ Yes</td><td style="font-size:.8rem;color:var(--muted);">Proxy for mechanical vibration from vehicular traffic.</td></tr>
-              <tr><td>Acid_Rain_Index</td><td class="after">✅ Yes</td><td style="font-size:.8rem;color:var(--muted);">Feature engineered: captures synergy between precipitation and PM10.</td></tr>
-              <tr><td>Vibration_Risk</td><td class="after">✅ Yes</td><td style="font-size:.8rem;color:var(--muted);">Feature engineered: captures synergy between age and road proximity.</td></tr>
-              <tr><td>ID_Edificacion</td><td class="before">❌ No</td><td style="font-size:.8rem;color:var(--muted);">Unique identifier. No predictive value.</td></tr>
-              <tr><td>Nombre_Patrimonio</td><td class="before">❌ No</td><td style="font-size:.8rem;color:var(--muted);">Descriptive name. No predictive value.</td></tr>
-              <tr><td>Departamento</td><td class="before">❌ No</td><td style="font-size:.8rem;color:var(--muted);">Redundant with Ciudad. High cardinality without added value.</td></tr>
+              <tr><td>Structure_Age_Years</td><td class="after">✅ Sí</td><td style="font-size:.8rem;color:var(--muted);">Key historical variable. Older age = greater accumulated exposure.</td></tr>
+              <tr><td>Main_Material</td><td class="after">✅ Sí</td><td style="font-size:.8rem;color:var(--muted);">Determines chemical and mechanical resistance of the structure.</td></tr>
+              <tr><td>Annual_Precipitation_mm</td><td class="after">✅ Sí</td><td style="font-size:.8rem;color:var(--muted);">Main agent of water erosion in porous materials.</td></tr>
+              <tr><td>Avg_Annual_Humidity_pct</td><td class="after">✅ Sí</td><td style="font-size:.8rem;color:var(--muted);">Promotes mold, efflorescence, and metal structure corrosion.</td></tr>
+              <tr><td>PM10_Avg_ugm3</td><td class="after">✅ Sí</td><td style="font-size:.8rem;color:var(--muted);">Pollutant related to acid rain and particulate deposition.</td></tr>
+              <tr><td>Main_Road_Distance_m</td><td class="after">✅ Sí</td><td style="font-size:.8rem;color:var(--muted);">Proxy for mechanical vibration from vehicular traffic.</td></tr>
+              <tr><td>Indice_Lluvia_Acida</td><td class="after">✅ Sí</td><td style="font-size:.8rem;color:var(--muted);">Feature engineered: captures synergy between precipitation and PM10.</td></tr>
+              <tr><td>Riesgo_Vibracion</td><td class="after">✅ Sí</td><td style="font-size:.8rem;color:var(--muted);">Feature engineered: captures synergy between age and road proximity.</td></tr>
+              <tr><td>Building_ID</td><td class="before">❌ No</td><td style="font-size:.8rem;color:var(--muted);">Unique identifier. No predictive value.</td></tr>
+              <tr><td>Heritage_Name</td><td class="before">❌ No</td><td style="font-size:.8rem;color:var(--muted);">Descriptive name. No predictive value.</td></tr>
+              <tr><td>Department</td><td class="before">❌ No</td><td style="font-size:.8rem;color:var(--muted);">Redundante con City. Alta cardinalidad sin valor adicional.</td></tr>
             </tbody>
           </table>
         </div>
@@ -260,8 +287,8 @@ df[<span class="st">'Vibration_Risk'</span>] = (
   </div>
 </section>
 
-<!-- NORMALIZATION -->
-<section class="content-sec" id="normalizacion">
+<!-- NORMALIZACIÓN -->
+<section class="content-sec" id="normalization">
   <div class="container">
     <div class="row g-5">
       <div class="col-lg-4 fade-up">
@@ -275,10 +302,10 @@ df[<span class="st">'Vibration_Risk'</span>] = (
 <span class="kw">from</span> sklearn.preprocessing <span class="kw">import</span> MinMaxScaler
 
 numeric_cols = [
-    <span class="st">'Edad_Estructura_Anios'</span>, <span class="st">'Precipitacion_Anual_mm'</span>,
-    <span class="st">'Humedad_Prom_Anual_pct'</span>, <span class="st">'PM10_Promedio_ugm3'</span>,
-    <span class="st">'Distancia_Via_Principal_m'</span>, <span class="st">'Acid_Rain_Index'</span>,
-    <span class="st">'Vibration_Risk'</span>
+    <span class="st">'Structure_Age_Years'</span>, <span class="st">'Annual_Precipitation_mm'</span>,
+    <span class="st">'Avg_Annual_Humidity_pct'</span>, <span class="st">'PM10_Avg_ugm3'</span>,
+    <span class="st">'Main_Road_Distance_m'</span>, <span class="st">'Indice_Lluvia_Acida'</span>,
+    <span class="st">'Riesgo_Vibracion'</span>
 ]
 
 scaler = <span class="fn">MinMaxScaler</span>()
@@ -288,13 +315,13 @@ df[numeric_cols] = scaler.<span class="fn">fit_transform</span>(df[numeric_cols]
         <div class="glass-card mt-3">
           <div class="card-label mb-2">Result after Min-Max normalization</div>
           <table class="scale-table">
-            <thead><tr><th>Variable</th><th>Norm. mean</th><th>Norm. std</th><th>Min</th><th>Max</th></tr></thead>
+            <thead><tr><th>Variable</th><th>Norm. mean</th><th>Norm. std</th><th>Mín</th><th>Máx</th></tr></thead>
             <tbody>
-              <tr><td>Edad_Estructura_Anios</td><td class="highlight">0.301</td><td>0.216</td><td>0.000</td><td>1.000</td></tr>
-              <tr><td>Precipitacion_Anual_mm</td><td class="highlight">0.408</td><td>0.230</td><td>0.000</td><td>1.000</td></tr>
-              <tr><td>Humedad_Prom_Anual_pct</td><td class="highlight">0.455</td><td>0.189</td><td>0.000</td><td>1.000</td></tr>
-              <tr><td>PM10_Promedio_ugm3</td><td class="highlight">0.451</td><td>0.193</td><td>0.000</td><td>1.000</td></tr>
-              <tr><td>Distancia_Via_Principal_m</td><td class="highlight">0.141</td><td>0.143</td><td>0.000</td><td>1.000</td></tr>
+              <tr><td>Structure_Age_Years</td><td class="highlight">0.301</td><td>0.216</td><td>0.000</td><td>1.000</td></tr>
+              <tr><td>Annual_Precipitation_mm</td><td class="highlight">0.408</td><td>0.230</td><td>0.000</td><td>1.000</td></tr>
+              <tr><td>Avg_Annual_Humidity_pct</td><td class="highlight">0.455</td><td>0.189</td><td>0.000</td><td>1.000</td></tr>
+              <tr><td>PM10_Avg_ugm3</td><td class="highlight">0.451</td><td>0.193</td><td>0.000</td><td>1.000</td></tr>
+              <tr><td>Main_Road_Distance_m</td><td class="highlight">0.141</td><td>0.143</td><td>0.000</td><td>1.000</td></tr>
             </tbody>
           </table>
         </div>
@@ -310,8 +337,8 @@ joblib.<span class="fn">dump</span>(scaler, <span class="st">'models/scaler_minm
   </div>
 </section>
 
-<!-- DOCUMENTATION -->
-<section class="content-sec dark" id="documentacion">
+<!-- DOCUMENTACIÓN -->
+<section class="content-sec dark" id="documentation">
   <div class="container">
     <div class="row g-5">
       <div class="col-lg-4 fade-up">
@@ -321,7 +348,7 @@ joblib.<span class="fn">dump</span>(scaler, <span class="st">'models/scaler_minm
       </div>
       <div class="col-lg-8 fade-up d1">
         <div class="code-block">
-<span class="cm"># ─── Reproducibility configuration ───</span>
+<span class="cm"># ─── Configuración de reproducibilidad ───</span>
 <span class="kw">import</span> numpy <span class="kw">as</span> np
 <span class="kw">import</span> random
 
@@ -334,14 +361,14 @@ pipeline_log = {
     <span class="st">"dataset"</span>: <span class="st">"dataset_patrimonio_colombia_1200.csv"</span>,
     <span class="st">"original_records"</span>: <span class="nu">1200</span>,
     <span class="st">"records_after_cleaning"</span>: <span class="nu">1197</span>,
-    <span class="st">"transformations"</span>: [
+    <span class="st">"transformaciones"</span>: [
         <span class="st">"clip PM10 >= 0"</span>,
         <span class="st">"filter age [50, 450]"</span>,
-        <span class="st">"one-hot Material_Principal"</span>,
-        <span class="st">"one-hot Ciudad"</span>,
-        <span class="st">"label-encode Nivel_Deterioro_Actual"</span>,
-        <span class="st">"feature: Acid_Rain_Index"</span>,
-        <span class="st">"feature: Vibration_Risk"</span>,
+        <span class="st">"one-hot Main_Material"</span>,
+        <span class="st">"one-hot City"</span>,
+        <span class="st">"label-encode Current_Deterioration_Level"</span>,
+        <span class="st">"feature: Indice_Lluvia_Acida"</span>,
+        <span class="st">"feature: Riesgo_Vibracion"</span>,
         <span class="st">"minmax scale numeric vars"</span>
     ],
     <span class="st">"scaler"</span>: <span class="st">"MinMaxScaler → models/scaler_minmax.pkl"</span>,

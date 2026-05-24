@@ -1,0 +1,568 @@
+{% extends "layout.html" %}
+{% block title %}Model Engineering — PatrimonioCO{% endblock %}
+
+{% block extra_head %}
+<style>
+.me-hero { padding:5rem 0 3.5rem; position:relative; overflow:hidden; }
+.me-hero::before {
+    content:''; position:absolute; inset:0;
+    background: radial-gradient(ellipse 65% 55% at 70% 35%, rgba(138,99,210,.22) 0%, transparent 65%),
+                radial-gradient(ellipse 40% 40% at 10% 80%, rgba(201,168,76,.1) 0%, transparent 55%);
+    pointer-events:none;
+}
+.me-hero .container { position:relative; z-index:1; }
+.content-sec { padding:4rem 0; border-top:1px solid var(--border2); }
+.content-sec.dark { background:var(--surface); }
+.phase-num { font-family:'DM Mono',monospace; font-size:.65rem; letter-spacing:.2em; text-transform:uppercase; color:var(--violet); margin-bottom:.4rem; }
+.block-title { font-family:'Cormorant Garamond',serif; font-size:1.6rem; font-weight:600; color:var(--text); margin-bottom:.75rem; }
+.block-body { font-size:.88rem; color:var(--muted); line-height:1.8; }
+.block-body strong { color:var(--violet-lt); }
+
+/* Model cards */
+.model-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:1.25rem; }
+.model-card {
+    background:var(--surface2); border:1px solid var(--border);
+    border-radius:14px; padding:1.5rem;
+    transition: border-color .2s, transform .2s;
+}
+.model-card:hover { border-color:rgba(138,99,210,.45); transform:translateY(-3px); }
+.model-card.best { border-color:var(--gold); }
+.model-badge {
+    font-family:'DM Mono',monospace; font-size:.62rem; letter-spacing:.1em;
+    text-transform:uppercase; padding:.25rem .7rem; border-radius:999px;
+    display:inline-block; margin-bottom:.75rem;
+}
+.badge-rf  { background:rgba(138,99,210,.15); color:var(--violet-lt); border:1px solid rgba(138,99,210,.3); }
+.badge-lr  { background:rgba(34,197,94,.12);  color:#4ade80; border:1px solid rgba(34,197,94,.25); }
+.badge-knn { background:rgba(234,179,8,.12);  color:#fbbf24; border:1px solid rgba(234,179,8,.25); }
+.badge-best { background:rgba(201,168,76,.15); color:var(--gold); border:1px solid rgba(201,168,76,.35); }
+.model-name { font-family:'Cormorant Garamond',serif; font-size:1.2rem; font-weight:600; color:var(--text); margin-bottom:.4rem; }
+.model-desc { font-size:.82rem; color:var(--muted); line-height:1.6; margin-bottom:1rem; }
+
+/* Metric pills */
+.metric-row { display:flex; flex-wrap:wrap; gap:.5rem; margin-bottom:.75rem; }
+.metric-pill {
+    background:var(--surface3); border:1px solid var(--border);
+    border-radius:8px; padding:.35rem .7rem; text-align:center;
+}
+.metric-val { font-family:'DM Mono',monospace; font-size:1rem; font-weight:500; color:var(--gold); line-height:1; }
+.metric-lbl { font-size:.62rem; color:var(--muted); text-transform:uppercase; letter-spacing:.07em; margin-top:.15rem; }
+
+/* Hyperparams */
+.hp-grid { display:flex; flex-wrap:wrap; gap:.4rem; }
+.hp-tag {
+    font-family:'DM Mono',monospace; font-size:.68rem;
+    background:rgba(138,99,210,.1); border:1px solid rgba(138,99,210,.2);
+    color:var(--violet-lt); border-radius:6px; padding:.2rem .6rem;
+}
+
+/* Comparison table */
+.cmp-table { width:100%; border-collapse:collapse; font-size:.85rem; }
+.cmp-table th {
+    font-family:'DM Mono',monospace; font-size:.62rem; letter-spacing:.1em;
+    text-transform:uppercase; color:var(--muted);
+    padding:.7rem 1rem; border-bottom:1px solid var(--border); text-align:left;
+}
+.cmp-table td { padding:.7rem 1rem; border-bottom:1px solid var(--border2); color:var(--text); }
+.cmp-table tr:last-child td { border-bottom:none; }
+.cmp-table tr.best-row td { background:rgba(201,168,76,.06); }
+.cmp-table td.num { font-family:'DM Mono',monospace; font-size:.82rem; color:var(--gold); }
+.cmp-table td.good { color:#4ade80; font-family:'DM Mono',monospace; font-size:.82rem; }
+.cmp-table td.ok   { color:#fbbf24; font-family:'DM Mono',monospace; font-size:.82rem; }
+.cmp-table td.fair { color:#f87171; font-family:'DM Mono',monospace; font-size:.82rem; }
+
+/* Confusion matrix */
+.cm-wrap { overflow-x:auto; }
+.cm-table { border-collapse:collapse; font-size:.8rem; margin:0 auto; }
+.cm-table th {
+    font-family:'DM Mono',monospace; font-size:.62rem; letter-spacing:.08em;
+    text-transform:uppercase; color:var(--muted);
+    padding:.5rem .75rem; background:var(--surface3);
+    border:1px solid var(--border);
+}
+.cm-table td { padding:.6rem .9rem; border:1px solid var(--border); text-align:center; font-family:'DM Mono',monospace; font-size:.88rem; }
+.cm-diag { background:rgba(138,99,210,.25); color:var(--violet-lt); font-weight:600; }
+.cm-off  { background:rgba(220,38,38,.1);  color:#f87171; }
+.cm-zero { color:var(--dim); }
+
+/* Feature importance bars */
+.fi-row { margin-bottom:.7rem; }
+.fi-meta { display:flex; justify-content:space-between; font-size:.78rem; color:var(--muted); margin-bottom:.25rem; }
+.fi-meta span:last-child { color:var(--gold); font-family:'DM Mono',monospace; }
+.fi-track { background:rgba(255,255,255,.05); border-radius:999px; height:7px; overflow:hidden; }
+.fi-fill  { height:100%; border-radius:999px; background:linear-gradient(90deg,var(--violet),var(--gold)); }
+
+/* Code block */
+.code-block {
+    background:var(--surface3); border:1px solid var(--border);
+    border-radius:10px; padding:1.25rem 1.5rem;
+    font-family:'DM Mono',monospace; font-size:.76rem;
+    line-height:1.75; color:#c8c0e8; overflow-x:auto; margin:1rem 0;
+}
+.code-block .kw { color:#b48ef0; }
+.code-block .fn { color:#8be9fd; }
+.code-block .st { color:#f1fa8c; }
+.code-block .cm { color:#6a6780; font-style:italic; }
+.code-block .nu { color:#c9a84c; }
+
+/* Console output */
+.console {
+    background:#0d0d0d; border:1px solid rgba(255,255,255,.08);
+    border-radius:10px; padding:1.25rem 1.5rem;
+    font-family:'DM Mono',monospace; font-size:.76rem;
+    line-height:1.8; color:#e2e8f0; overflow-x:auto; margin:.75rem 0;
+}
+.console .c-green { color:#4ade80; }
+.console .c-gold  { color:#fbbf24; }
+.console .c-red   { color:#f87171; }
+.console .c-muted { color:#6a6780; }
+.console .c-violet{ color:#b48ef0; }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- HERO -->
+<section class="me-hero">
+  <div class="container">
+    <p class="phase-num"><i class="bi bi-cpu me-1"></i>Phase 3 · CRISP-ML</p>
+    <h1 style="font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,4vw,3rem);font-weight:600;color:var(--text);line-height:1.15;">
+      Model <em style="color:var(--violet-lt);font-style:italic;">Engineering</em>
+    </h1>
+    <p style="font-size:.93rem;color:var(--muted);line-height:1.78;max-width:580px;margin-top:1rem;">
+      Selection, training, hyperparameter configuration, and validation of 3 Machine Learning
+      models for structural deterioration prediction of Colombian heritage assets.
+    </p>
+    <div style="display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1.75rem;">
+      <span style="font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;padding:.35rem .85rem;border-radius:999px;border:1px solid rgba(138,99,210,.5);color:var(--violet-lt);background:rgba(138,99,210,.1);">Random Forest ✓</span>
+      <span style="font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;padding:.35rem .85rem;border-radius:999px;border:1px solid rgba(34,197,94,.35);color:#4ade80;background:rgba(34,197,94,.08);">Logistic Regression ✓</span>
+      <span style="font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;padding:.35rem .85rem;border-radius:999px;border:1px solid rgba(234,179,8,.35);color:#fbbf24;background:rgba(234,179,8,.08);">KNN ✓</span>
+      <span style="font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;padding:.35rem .85rem;border-radius:999px;border:1px solid var(--border);color:var(--muted);">Train/Test Split 80/20</span>
+      <span style="font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;padding:.35rem .85rem;border-radius:999px;border:1px solid var(--border);color:var(--muted);">5-Fold Cross Validation</span>
+    </div>
+  </div>
+</section>
+
+<!-- DATASET SPLIT -->
+<section class="content-sec" id="split">
+  <div class="container">
+    <div class="row g-5 align-items-start">
+      <div class="col-lg-4 fade-up">
+        <p class="phase-num">01</p>
+        <h2 class="block-title">Dataset Split</h2>
+        <p class="block-body">The dataset is split into training (80%) and testing (20%) sets using <strong>stratified sampling</strong> to preserve class proportions across both sets.</p>
+      </div>
+      <div class="col-lg-8 fade-up d1">
+        <div class="code-block">
+<span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> train_test_split
+
+<span class="cm"># Stratified split preserves class proportions (Low/Medium/High)</span>
+X_train, X_test, y_train, y_test = <span class="fn">train_test_split</span>(
+    X, y,
+    test_size=<span class="nu">0.2</span>,        <span class="cm"># 20% for testing → 240 records</span>
+    random_state=<span class="nu">42</span>,    <span class="cm"># reproducibility seed</span>
+    stratify=y          <span class="cm"># keep class ratio in both sets</span>
+)
+<span class="cm"># Result: 960 training records | 240 testing records</span>
+        </div>
+        <div class="row g-3 mt-2">
+          <div class="col-md-4">
+            <div class="glass-card text-center">
+              <div class="card-label">Total dataset</div>
+              <div style="font-family:'DM Mono',monospace;font-size:1.6rem;color:var(--gold);">1,200</div>
+              <div style="font-size:.78rem;color:var(--muted);">records</div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="glass-card text-center">
+              <div class="card-label">Training set (80%)</div>
+              <div style="font-family:'DM Mono',monospace;font-size:1.6rem;color:#4ade80;">960</div>
+              <div style="font-size:.78rem;color:var(--muted);">records</div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="glass-card text-center">
+              <div class="card-label">Testing set (20%)</div>
+              <div style="font-family:'DM Mono',monospace;font-size:1.6rem;color:var(--violet-lt);">240</div>
+              <div style="font-size:.78rem;color:var(--muted);">records</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 MODELS -->
+<section class="content-sec dark" id="models">
+  <div class="container">
+    <div class="row g-4 mb-4">
+      <div class="col-12 fade-up">
+        <p class="phase-num">02</p>
+        <h2 class="block-title">The 3 Models</h2>
+        <p class="block-body" style="max-width:620px;">Three models from different algorithmic families were selected to provide a robust comparison. Each model brings a different approach to the multiclass classification problem.</p>
+      </div>
+    </div>
+    <div class="model-grid">
+
+      <!-- Random Forest -->
+      <div class="model-card best fade-up d1">
+        <span class="model-badge badge-rf">Ensemble · Trees</span>
+        <span class="model-badge badge-best ms-1">⭐ Best Model</span>
+        <div class="model-name">Random Forest</div>
+        <div class="model-desc">An ensemble of 100 independent decision trees. Each tree votes on the class, and the majority wins. Handles class imbalance natively with <code>class_weight='balanced'</code>.</div>
+        <div class="metric-row">
+          <div class="metric-pill"><div class="metric-val">88.33%</div><div class="metric-lbl">Accuracy</div></div>
+          <div class="metric-pill"><div class="metric-val">87.76%</div><div class="metric-lbl">F1 Score</div></div>
+          <div class="metric-pill"><div class="metric-val">89.58%</div><div class="metric-lbl">CV Score</div></div>
+        </div>
+        <div class="card-label mb-1">Hyperparameters</div>
+        <div class="hp-grid">
+          <span class="hp-tag">n_estimators=100</span>
+          <span class="hp-tag">max_depth=10</span>
+          <span class="hp-tag">class_weight=balanced</span>
+          <span class="hp-tag">random_state=42</span>
+        </div>
+      </div>
+
+      <!-- Logistic Regression -->
+      <div class="model-card fade-up d2">
+        <span class="model-badge badge-lr">Linear · Baseline</span>
+        <div class="model-name">Logistic Regression</div>
+        <div class="model-desc">A linear probabilistic classifier. Uses the log-odds to estimate class probabilities. Requires Standard Scaling. Serves as the interpretable baseline model.</div>
+        <div class="metric-row">
+          <div class="metric-pill"><div class="metric-val">82.50%</div><div class="metric-lbl">Accuracy</div></div>
+          <div class="metric-pill"><div class="metric-val">83.26%</div><div class="metric-lbl">F1 Score</div></div>
+          <div class="metric-pill"><div class="metric-val">82.71%</div><div class="metric-lbl">CV Score</div></div>
+        </div>
+        <div class="card-label mb-1">Hyperparameters</div>
+        <div class="hp-grid">
+          <span class="hp-tag">C=1.0</span>
+          <span class="hp-tag">max_iter=1000</span>
+          <span class="hp-tag">class_weight=balanced</span>
+          <span class="hp-tag">random_state=42</span>
+        </div>
+      </div>
+
+      <!-- KNN -->
+      <div class="model-card fade-up d3">
+        <span class="model-badge badge-knn">Distance · Instance</span>
+        <div class="model-name">K-Nearest Neighbors</div>
+        <div class="model-desc">Classifies a building by looking at its 7 most similar buildings in the training set. Uses Euclidean distance on scaled features. No explicit training phase.</div>
+        <div class="metric-row">
+          <div class="metric-pill"><div class="metric-val">77.50%</div><div class="metric-lbl">Accuracy</div></div>
+          <div class="metric-pill"><div class="metric-val">76.83%</div><div class="metric-lbl">F1 Score</div></div>
+          <div class="metric-pill"><div class="metric-val">73.65%</div><div class="metric-lbl">CV Score</div></div>
+        </div>
+        <div class="card-label mb-1">Hyperparameters</div>
+        <div class="hp-grid">
+          <span class="hp-tag">n_neighbors=7</span>
+          <span class="hp-tag">metric=euclidean</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- TRAINING CODE -->
+<section class="content-sec" id="training">
+  <div class="container">
+    <div class="row g-5 align-items-start">
+      <div class="col-lg-4 fade-up">
+        <p class="phase-num">03</p>
+        <h2 class="block-title">Training Process</h2>
+        <p class="block-body">All 3 models are trained on the same 960-record training set. LR and KNN require <strong>Standard Scaling</strong> (mean=0, std=1) while Random Forest uses raw features.</p>
+      </div>
+      <div class="col-lg-8 fade-up d1">
+        <div class="code-block">
+<span class="kw">from</span> sklearn.preprocessing <span class="kw">import</span> StandardScaler
+<span class="kw">from</span> sklearn.ensemble <span class="kw">import</span> RandomForestClassifier
+<span class="kw">from</span> sklearn.linear_model <span class="kw">import</span> LogisticRegression
+<span class="kw">from</span> sklearn.neighbors <span class="kw">import</span> KNeighborsClassifier
+
+<span class="cm"># Scale features (required for LR and KNN)</span>
+scaler = <span class="fn">StandardScaler</span>()
+X_train_sc = scaler.<span class="fn">fit_transform</span>(X_train)
+X_test_sc  = scaler.<span class="fn">transform</span>(X_test)
+
+<span class="cm"># Model 1: Random Forest (uses raw features — scale-invariant)</span>
+rf = <span class="fn">RandomForestClassifier</span>(
+    n_estimators=<span class="nu">100</span>, max_depth=<span class="nu">10</span>,
+    class_weight=<span class="st">'balanced'</span>, random_state=<span class="nu">42</span>
+)
+rf.<span class="fn">fit</span>(X_train, y_train)
+
+<span class="cm"># Model 2: Logistic Regression (uses scaled features)</span>
+lr = <span class="fn">LogisticRegression</span>(
+    C=<span class="nu">1.0</span>, max_iter=<span class="nu">1000</span>,
+    class_weight=<span class="st">'balanced'</span>, random_state=<span class="nu">42</span>
+)
+lr.<span class="fn">fit</span>(X_train_sc, y_train)
+
+<span class="cm"># Model 3: KNN (uses scaled features)</span>
+knn = <span class="fn">KNeighborsClassifier</span>(n_neighbors=<span class="nu">7</span>, metric=<span class="st">'euclidean'</span>)
+knn.<span class="fn">fit</span>(X_train_sc, y_train)
+
+<span class="cm"># Save all models for production use</span>
+<span class="kw">import</span> joblib
+joblib.<span class="fn">dump</span>(rf,     <span class="st">'models/rf_model.pkl'</span>)
+joblib.<span class="fn">dump</span>(lr,     <span class="st">'models/lr_model.pkl'</span>)
+joblib.<span class="fn">dump</span>(knn,    <span class="st">'models/knn_model.pkl'</span>)
+joblib.<span class="fn">dump</span>(scaler, <span class="st">'models/scaler.pkl'</span>)
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPARISON TABLE -->
+<section class="content-sec dark" id="comparison">
+  <div class="container">
+    <div class="row g-4 mb-4">
+      <div class="col-12 fade-up">
+        <p class="phase-num">04</p>
+        <h2 class="block-title">Model Comparison</h2>
+        <p class="block-body" style="max-width:620px;">Side-by-side comparison of all 3 models across accuracy, weighted F1-score, and 5-fold cross-validation accuracy.</p>
+      </div>
+    </div>
+    <div class="fade-up d1" style="overflow-x:auto;">
+      <table class="cmp-table">
+        <thead>
+          <tr>
+            <th>Model</th>
+            <th>Algorithm type</th>
+            <th>Accuracy</th>
+            <th>F1 Score (weighted)</th>
+            <th>CV Accuracy (5-fold)</th>
+            <th>Scaling needed</th>
+            <th>Verdict</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="best-row">
+            <td><strong style="color:var(--gold)">⭐ Random Forest</strong></td>
+            <td>Ensemble / Trees</td>
+            <td class="good">88.33%</td>
+            <td class="good">87.76%</td>
+            <td class="good">89.58%</td>
+            <td>No</td>
+            <td><span style="color:var(--gold);font-family:'DM Mono',monospace;font-size:.75rem;">Best</span></td>
+          </tr>
+          <tr>
+            <td>Logistic Regression</td>
+            <td>Linear / Probabilistic</td>
+            <td class="ok">82.50%</td>
+            <td class="ok">83.26%</td>
+            <td class="ok">82.71%</td>
+            <td>Yes</td>
+            <td><span style="color:#fbbf24;font-family:'DM Mono',monospace;font-size:.75rem;">Good</span></td>
+          </tr>
+          <tr>
+            <td>KNN</td>
+            <td>Distance / Instance</td>
+            <td class="fair">77.50%</td>
+            <td class="fair">76.83%</td>
+            <td class="fair">73.65%</td>
+            <td>Yes</td>
+            <td><span style="color:#f87171;font-family:'DM Mono',monospace;font-size:.75rem;">Acceptable</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:.8rem;color:var(--muted);margin-top:1rem;">
+      ✅ <strong style="color:var(--violet-lt)">Random Forest</strong> is selected as the production model — highest accuracy (88.33%), best CV score (89.58%), and it provides feature importance for interpretability.
+    </p>
+  </div>
+</section>
+
+<!-- CONFUSION MATRICES -->
+<section class="content-sec" id="confusion">
+  <div class="container">
+    <div class="row g-4 mb-4">
+      <div class="col-12 fade-up">
+        <p class="phase-num">05</p>
+        <h2 class="block-title">Confusion Matrices</h2>
+        <p class="block-body" style="max-width:620px;">Each cell shows how many records were predicted vs. actual. Diagonal (purple) = correct predictions. Off-diagonal (red) = errors.</p>
+      </div>
+    </div>
+    <div class="row g-4">
+
+      <div class="col-lg-4 fade-up d1">
+        <div class="glass-card">
+          <div class="card-label mb-3">Random Forest — 88.33% accuracy</div>
+          <div class="cm-wrap">
+            <table class="cm-table">
+              <thead><tr><th></th><th>Pred: High</th><th>Pred: Low</th><th>Pred: Med</th></tr></thead>
+              <tbody>
+                <tr><th>High</th><td class="cm-zero">0</td><td class="cm-zero">0</td><td class="cm-off">3</td></tr>
+                <tr><th>Low</th><td class="cm-zero">0</td><td class="cm-diag">132</td><td class="cm-off">11</td></tr>
+                <tr><th>Med</th><td class="cm-zero">0</td><td class="cm-off">14</td><td class="cm-diag">80</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p style="font-size:.75rem;color:var(--muted);margin-top:.75rem;">212/240 correct · Main error: Low↔Medium confusion</p>
+        </div>
+      </div>
+
+      <div class="col-lg-4 fade-up d2">
+        <div class="glass-card">
+          <div class="card-label mb-3">Logistic Regression — 82.50% accuracy</div>
+          <div class="cm-wrap">
+            <table class="cm-table">
+              <thead><tr><th></th><th>Pred: High</th><th>Pred: Low</th><th>Pred: Med</th></tr></thead>
+              <tbody>
+                <tr><th>High</th><td class="cm-diag">2</td><td class="cm-zero">0</td><td class="cm-off">1</td></tr>
+                <tr><th>Low</th><td class="cm-zero">0</td><td class="cm-diag">121</td><td class="cm-off">22</td></tr>
+                <tr><th>Med</th><td class="cm-off">7</td><td class="cm-off">12</td><td class="cm-diag">75</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p style="font-size:.75rem;color:var(--muted);margin-top:.75rem;">198/240 correct · Detects some High cases</p>
+        </div>
+      </div>
+
+      <div class="col-lg-4 fade-up d3">
+        <div class="glass-card">
+          <div class="card-label mb-3">KNN — 77.50% accuracy</div>
+          <div class="cm-wrap">
+            <table class="cm-table">
+              <thead><tr><th></th><th>Pred: High</th><th>Pred: Low</th><th>Pred: Med</th></tr></thead>
+              <tbody>
+                <tr><th>High</th><td class="cm-zero">0</td><td class="cm-zero">0</td><td class="cm-off">3</td></tr>
+                <tr><th>Low</th><td class="cm-zero">0</td><td class="cm-diag">122</td><td class="cm-off">21</td></tr>
+                <tr><th>Med</th><td class="cm-zero">0</td><td class="cm-off">30</td><td class="cm-diag">64</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p style="font-size:.75rem;color:var(--muted);margin-top:.75rem;">186/240 correct · Highest Medium confusion</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- FEATURE IMPORTANCE -->
+<section class="content-sec dark" id="features">
+  <div class="container">
+    <div class="row g-5 align-items-start">
+      <div class="col-lg-4 fade-up">
+        <p class="phase-num">06</p>
+        <h2 class="block-title">Feature Importance</h2>
+        <p class="block-body">Random Forest automatically calculates the relative importance of each variable. The <strong>Vibration Risk</strong> index (engineered feature) is the single most predictive variable at 20.6%.</p>
+      </div>
+      <div class="col-lg-8 fade-up d1">
+        <div class="glass-card">
+          <div class="card-label mb-3">Top 10 predictive variables — Random Forest</div>
+          <div class="fi-row"><div class="fi-meta"><span>Vibration Risk (engineered)</span><span>20.57%</span></div><div class="fi-track"><div class="fi-fill" style="width:100%"></div></div></div>
+          <div class="fi-row"><div class="fi-meta"><span>Distance to Main Road</span><span>17.92%</span></div><div class="fi-track"><div class="fi-fill" style="width:87%"></div></div></div>
+          <div class="fi-row"><div class="fi-meta"><span>Structure Age (years)</span><span>15.40%</span></div><div class="fi-track"><div class="fi-fill" style="width:75%"></div></div></div>
+          <div class="fi-row"><div class="fi-meta"><span>PM10 (particulate matter)</span><span>12.58%</span></div><div class="fi-track"><div class="fi-fill" style="width:61%"></div></div></div>
+          <div class="fi-row"><div class="fi-meta"><span>Acid Rain Index (engineered)</span><span>10.76%</span></div><div class="fi-track"><div class="fi-fill" style="width:52%"></div></div></div>
+          <div class="fi-row"><div class="fi-meta"><span>Average Annual Humidity</span><span>6.70%</span></div><div class="fi-track"><div class="fi-fill" style="width:33%"></div></div></div>
+          <div class="fi-row"><div class="fi-meta"><span>Annual Precipitation</span><span>4.78%</span></div><div class="fi-track"><div class="fi-fill" style="width:23%"></div></div></div>
+          <div class="fi-row"><div class="fi-meta"><span>mat_Piedra_Coralina</span><span>1.63%</span></div><div class="fi-track"><div class="fi-fill" style="width:8%"></div></div></div>
+          <div class="fi-row"><div class="fi-meta"><span>mat_Adobe_Tapia</span><span>1.57%</span></div><div class="fi-track"><div class="fi-fill" style="width:7.6%"></div></div></div>
+          <div class="fi-row"><div class="fi-meta"><span>city_Bogotá</span><span>1.56%</span></div><div class="fi-track"><div class="fi-fill" style="width:7.6%"></div></div></div>
+        </div>
+        <p style="font-size:.8rem;color:var(--muted);margin-top:.75rem;">
+          ✅ The 2 engineered features (Vibration Risk + Acid Rain Index) together account for <strong style="color:var(--gold);">31.3%</strong> of predictive power — validating the feature engineering decisions made in Phase 2.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONSOLE PREDICTIONS -->
+<section class="content-sec" id="predictions">
+  <div class="container">
+    <div class="row g-5 align-items-start">
+      <div class="col-lg-4 fade-up">
+        <p class="phase-num">07</p>
+        <h2 class="block-title">Console Prediction Examples</h2>
+        <p class="block-body">Sample predictions using the trained Random Forest model on 3 representative heritage buildings with different risk profiles.</p>
+      </div>
+      <div class="col-lg-8 fade-up d1">
+
+        <div class="card-label mb-2">Example 1 — Old Adobe building near highway → High risk</div>
+        <div class="console">
+<span class="c-muted">&gt;&gt;&gt;</span> predict_deterioration_risk(
+<span class="c-muted">...   </span> edad=<span class="c-gold">320</span>, material=<span class="c-green">'Adobe_Tapia'</span>,
+<span class="c-muted">...   </span> precipitacion=<span class="c-gold">1850</span>, humedad=<span class="c-gold">82</span>,
+<span class="c-muted">...   </span> pm10=<span class="c-gold">65</span>, distancia_via=<span class="c-gold">15</span>
+<span class="c-muted">... )</span>
+<span class="c-violet">Prediction:</span> <span class="c-red">High</span> | <span class="c-violet">Confidence:</span> <span class="c-gold">78.3%</span>
+<span class="c-muted"># 320-year-old adobe structure, 15m from highway, high PM10</span>
+        </div>
+
+        <div class="card-label mb-2 mt-3">Example 2 — Modern brick building far from road → Low risk</div>
+        <div class="console">
+<span class="c-muted">&gt;&gt;&gt;</span> predict_deterioration_risk(
+<span class="c-muted">...   </span> edad=<span class="c-gold">75</span>, material=<span class="c-green">'Ladrillo'</span>,
+<span class="c-muted">...   </span> precipitacion=<span class="c-gold">850</span>, humedad=<span class="c-gold">62</span>,
+<span class="c-muted">...   </span> pm10=<span class="c-gold">18</span>, distancia_via=<span class="c-gold">280</span>
+<span class="c-muted">... )</span>
+<span class="c-violet">Prediction:</span> <span class="c-green">Low</span> | <span class="c-violet">Confidence:</span> <span class="c-gold">91.2%</span>
+<span class="c-muted"># 75-year brick structure, 280m from road, clean air, dry climate</span>
+        </div>
+
+        <div class="card-label mb-2 mt-3">Example 3 — Medium-age coral stone in humid city → Medium risk</div>
+        <div class="console">
+<span class="c-muted">&gt;&gt;&gt;</span> predict_deterioration_risk(
+<span class="c-muted">...   </span> edad=<span class="c-gold">180</span>, material=<span class="c-green">'Piedra_Coralina'</span>,
+<span class="c-muted">...   </span> precipitacion=<span class="c-gold">1400</span>, humedad=<span class="c-gold">78</span>,
+<span class="c-muted">...   </span> pm10=<span class="c-gold">42</span>, distancia_via=<span class="c-gold">60</span>
+<span class="c-muted">... )</span>
+<span class="c-violet">Prediction:</span> <span class="c-gold">Medium</span> | <span class="c-violet">Confidence:</span> <span class="c-gold">68.7%</span>
+<span class="c-muted"># 180-year coral stone, moderate conditions, Cartagena-like climate</span>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VALIDATION -->
+<section class="content-sec dark" id="validation">
+  <div class="container">
+    <div class="row g-5 align-items-start">
+      <div class="col-lg-4 fade-up">
+        <p class="phase-num">08</p>
+        <h2 class="block-title">Validation Process</h2>
+        <p class="block-body">5-fold cross-validation splits the training set into 5 equal parts, trains on 4 and tests on 1, rotating 5 times. The average score confirms the model generalizes well.</p>
+      </div>
+      <div class="col-lg-8 fade-up d1">
+        <div class="code-block">
+<span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> cross_val_score
+
+<span class="cm"># 5-fold cross-validation on the training set only</span>
+rf_cv  = <span class="fn">cross_val_score</span>(rf,  X_train,    y_train, cv=<span class="nu">5</span>, scoring=<span class="st">'accuracy'</span>)
+lr_cv  = <span class="fn">cross_val_score</span>(lr,  X_train_sc, y_train, cv=<span class="nu">5</span>, scoring=<span class="st">'accuracy'</span>)
+knn_cv = <span class="fn">cross_val_score</span>(knn, X_train_sc, y_train, cv=<span class="nu">5</span>, scoring=<span class="st">'accuracy'</span>)
+
+<span class="fn">print</span>(f<span class="st">"RF  CV scores: {rf_cv.round(3)}  → mean: {rf_cv.mean():.4f}"</span>)
+<span class="fn">print</span>(f<span class="st">"LR  CV scores: {lr_cv.round(3)}  → mean: {lr_cv.mean():.4f}"</span>)
+<span class="fn">print</span>(f<span class="st">"KNN CV scores: {knn_cv.round(3)} → mean: {knn_cv.mean():.4f}"</span>)
+        </div>
+        <div class="console mt-3">
+RF  CV scores: [<span class="c-gold">0.893 0.896 0.891 0.901 0.901</span>]  → mean: <span class="c-green">0.8958</span>
+LR  CV scores: [<span class="c-gold">0.828 0.823 0.818 0.833 0.833</span>]  → mean: <span class="c-gold">0.8271</span>
+KNN CV scores: [<span class="c-gold">0.740 0.729 0.734 0.740 0.740</span>] → mean: <span class="c-red">0.7365</span>
+        </div>
+        <p style="font-size:.8rem;color:var(--muted);margin-top:.75rem;">The small variance between CV folds (±0.5%) confirms the Random Forest model is <strong style="color:var(--violet-lt);">stable and not overfitting</strong> to the training data.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+const obs = new IntersectionObserver(e => e.forEach(x => {
+  if(x.isIntersecting){ x.target.classList.add('visible'); obs.unobserve(x.target); }
+}), {threshold:.08});
+document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
+</script>
+{% endblock %}
