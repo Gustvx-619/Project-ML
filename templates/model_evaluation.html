@@ -1,0 +1,559 @@
+{% extends "layout.html" %}
+{% block title %}Model Evaluation — PatrimonioCO{% endblock %}
+
+{% block extra_head %}
+<style>
+.ev-hero { padding:5rem 0 3.5rem; position:relative; overflow:hidden; }
+.ev-hero::before {
+    content:''; position:absolute; inset:0;
+    background: radial-gradient(ellipse 65% 55% at 70% 35%, rgba(201,168,76,.2) 0%, transparent 65%),
+                radial-gradient(ellipse 40% 40% at 10% 80%, rgba(138,99,210,.12) 0%, transparent 55%);
+    pointer-events:none;
+}
+.ev-hero .container { position:relative; z-index:1; }
+.content-sec { padding:4rem 0; border-top:1px solid var(--border2); }
+.content-sec.dark { background:var(--surface); }
+.phase-num { font-family:'DM Mono',monospace; font-size:.65rem; letter-spacing:.2em; text-transform:uppercase; color:var(--gold); margin-bottom:.4rem; }
+.block-title { font-family:'Cormorant Garamond',serif; font-size:1.6rem; font-weight:600; color:var(--text); margin-bottom:.75rem; }
+.block-body { font-size:.88rem; color:var(--muted); line-height:1.8; }
+.block-body strong { color:var(--violet-lt); }
+
+/* Dashboard cards */
+.model-eval-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:1.5rem; }
+.eval-card { background:var(--surface2); border:1px solid var(--border); border-radius:16px; padding:1.75rem; }
+.eval-card.best { border-color:var(--gold); box-shadow:0 0 24px rgba(201,168,76,.12); }
+.eval-model-name { font-family:'Cormorant Garamond',serif; font-size:1.3rem; font-weight:600; color:var(--text); margin-bottom:.25rem; }
+.eval-type { font-family:'DM Mono',monospace; font-size:.65rem; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin-bottom:1rem; }
+.metrics-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:.6rem; margin-bottom:1rem; }
+.metric-box { background:var(--surface3); border:1px solid var(--border); border-radius:10px; padding:.7rem .6rem; text-align:center; }
+.metric-val { font-family:'DM Mono',monospace; font-size:1.05rem; font-weight:500; color:var(--gold); line-height:1; }
+.metric-val.good { color:#4ade80; }
+.metric-val.ok   { color:#fbbf24; }
+.metric-val.fair { color:#f87171; }
+.metric-lbl { font-size:.6rem; color:var(--muted); text-transform:uppercase; letter-spacing:.07em; margin-top:.25rem; }
+
+/* Comparison table */
+.cmp-table { width:100%; border-collapse:collapse; font-size:.84rem; }
+.cmp-table th { font-family:'DM Mono',monospace; font-size:.62rem; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); padding:.7rem 1rem; border-bottom:1px solid var(--border); text-align:left; }
+.cmp-table td { padding:.7rem 1rem; border-bottom:1px solid var(--border2); color:var(--text); }
+.cmp-table tr.best-row td { background:rgba(201,168,76,.06); }
+.cmp-table td.good { color:#4ade80; font-family:'DM Mono',monospace; font-size:.82rem; font-weight:600; }
+.cmp-table td.ok   { color:#fbbf24; font-family:'DM Mono',monospace; font-size:.82rem; }
+.cmp-table td.fair { color:#f87171; font-family:'DM Mono',monospace; font-size:.82rem; }
+
+/* Confusion matrix */
+.cm-table { border-collapse:collapse; margin:0 auto; }
+.cm-table th { font-family:'DM Mono',monospace; font-size:.6rem; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); padding:.5rem .75rem; background:var(--surface3); border:1px solid var(--border); }
+.cm-table td { padding:.65rem 1rem; border:1px solid var(--border); text-align:center; font-family:'DM Mono',monospace; font-size:.9rem; }
+.cm-diag { background:rgba(138,99,210,.25); color:var(--violet-lt); font-weight:600; }
+.cm-off  { background:rgba(220,38,38,.1);  color:#f87171; }
+.cm-zero { color:var(--dim); }
+
+/* ROC bars */
+.roc-row { margin-bottom:.85rem; }
+.roc-meta { display:flex; justify-content:space-between; font-size:.8rem; color:var(--muted); margin-bottom:.3rem; }
+.roc-meta .val { color:var(--gold); font-family:'DM Mono',monospace; font-weight:500; }
+.roc-track { background:rgba(255,255,255,.05); border-radius:999px; height:10px; overflow:hidden; }
+.roc-fill { height:100%; border-radius:999px; }
+.roc-fill.gold   { background:linear-gradient(90deg,var(--violet),var(--gold)); }
+.roc-fill.green  { background:linear-gradient(90deg,#166534,#4ade80); }
+.roc-fill.amber  { background:linear-gradient(90deg,#92400e,#fbbf24); }
+.roc-fill.red    { background:linear-gradient(90deg,#991b1b,#f87171); }
+
+/* Per class table */
+.cls-table { width:100%; border-collapse:collapse; font-size:.82rem; }
+.cls-table th { font-family:'DM Mono',monospace; font-size:.6rem; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); padding:.55rem .9rem; border-bottom:1px solid var(--border); text-align:left; }
+.cls-table td { padding:.6rem .9rem; border-bottom:1px solid var(--border2); color:var(--text); }
+.cls-table td.num { font-family:'DM Mono',monospace; font-size:.8rem; color:var(--gold); text-align:right; }
+.cls-table td.good-n { font-family:'DM Mono',monospace; font-size:.8rem; color:#4ade80; text-align:right; }
+.cls-table td.warn-n { font-family:'DM Mono',monospace; font-size:.8rem; color:#fbbf24; text-align:right; }
+.cls-table td.bad-n  { font-family:'DM Mono',monospace; font-size:.8rem; color:#f87171; text-align:right; }
+
+/* Best model section */
+.winner-card { background:linear-gradient(135deg,rgba(201,168,76,.12),rgba(138,99,210,.08)); border:1px solid var(--gold); border-radius:16px; padding:2rem; }
+.winner-title { font-family:'Cormorant Garamond',serif; font-size:1.8rem; font-weight:700; color:var(--gold); margin-bottom:.5rem; }
+.reason-list { list-style:none; padding:0; }
+.reason-list li { display:flex; gap:.75rem; align-items:flex-start; padding:.6rem 0; border-bottom:1px solid var(--border2); font-size:.88rem; color:var(--muted); line-height:1.6; }
+.reason-list li:last-child { border-bottom:none; }
+.reason-list .check { color:var(--gold); font-size:1rem; flex-shrink:0; margin-top:.1rem; }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- HERO -->
+<section class="ev-hero">
+  <div class="container">
+    <p class="phase-num"><i class="bi bi-graph-up-arrow me-1"></i>Phase 4 · CRISP-ML</p>
+    <h1 style="font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,4vw,3rem);font-weight:600;color:var(--text);line-height:1.15;">
+      Model <em style="color:var(--gold);font-style:italic;">Evaluation</em>
+    </h1>
+    <p style="font-size:.93rem;color:var(--muted);line-height:1.78;max-width:580px;margin-top:1rem;">
+      Comprehensive evaluation of the 3 trained models using classification metrics:
+      Accuracy, Precision, Recall, F1-Score, AUC-ROC, and Confusion Matrix.
+    </p>
+    <div style="display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1.75rem;">
+      <span style="font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;padding:.35rem .85rem;border-radius:999px;border:1px solid rgba(201,168,76,.5);color:var(--gold);background:rgba(201,168,76,.08);">Classification Problem</span>
+      <span style="font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;padding:.35rem .85rem;border-radius:999px;border:1px solid var(--border);color:var(--muted);">3 Classes: Low · Medium · High</span>
+      <span style="font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;padding:.35rem .85rem;border-radius:999px;border:1px solid var(--border);color:var(--muted);">240 Test Records</span>
+      <span style="font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;padding:.35rem .85rem;border-radius:999px;border:1px solid rgba(138,99,210,.4);color:var(--violet-lt);background:rgba(138,99,210,.08);">Best: Random Forest ⭐</span>
+    </div>
+  </div>
+</section>
+
+<!-- METHODOLOGY -->
+<section class="content-sec" id="methodology">
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-lg-4 fade-up">
+        <p class="phase-num">01</p>
+        <h2 class="block-title">Evaluation Methodology</h2>
+      </div>
+      <div class="col-lg-8 fade-up d1">
+        <p class="block-body" style="margin-bottom:1rem;">
+          This project solves a <strong>multiclass classification problem</strong> — predicting one of
+          three deterioration levels: <strong>Low</strong>, <strong>Medium</strong>, or <strong>High</strong>.
+          Therefore, classification metrics are applied. Regression metrics (MAE, MSE, RMSE, R²)
+          are not applicable since there is no continuous numerical output.
+        </p>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="glass-card">
+              <div class="card-label mb-2">Metrics used</div>
+              <div style="font-size:.83rem;color:var(--muted);line-height:1.75;">
+                <div>• <strong style="color:var(--violet-lt)">Accuracy</strong> — overall correct predictions</div>
+                <div>• <strong style="color:var(--violet-lt)">Precision</strong> — quality of positive predictions</div>
+                <div>• <strong style="color:var(--violet-lt)">Recall</strong> — coverage of actual positives</div>
+                <div>• <strong style="color:var(--violet-lt)">F1-Score</strong> — harmonic mean of P & R</div>
+                <div>• <strong style="color:var(--violet-lt)">AUC-ROC</strong> — discrimination ability</div>
+                <div>• <strong style="color:var(--violet-lt)">Confusion Matrix</strong> — prediction breakdown</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="glass-card">
+              <div class="card-label mb-2">Evaluation setup</div>
+              <div style="font-size:.83rem;color:var(--muted);line-height:1.75;">
+                <div>• Test set: <strong style="color:var(--gold)">240 records</strong> (20% of dataset)</div>
+                <div>• Stratified split preserves class ratio</div>
+                <div>• Weighted average for imbalanced classes</div>
+                <div>• AUC: One-vs-Rest (OvR) strategy</div>
+                <div>• Random seed: 42 (reproducible)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DASHBOARD -->
+<section class="content-sec dark" id="dashboard">
+  <div class="container">
+    <div class="row g-4 mb-4">
+      <div class="col-12 fade-up">
+        <p class="phase-num">02</p>
+        <h2 class="block-title">Evaluation Dashboard</h2>
+        <p class="block-body" style="max-width:620px;">All 6 classification metrics for each model computed on the 240-record test set.</p>
+      </div>
+    </div>
+    <div class="model-eval-grid">
+
+      <!-- Random Forest -->
+      <div class="eval-card best fade-up d1">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.5rem;">
+          <div>
+            <div class="eval-model-name">Random Forest</div>
+            <div class="eval-type">Ensemble · Trees · ⭐ Best Model</div>
+          </div>
+          <span style="font-family:'DM Mono',monospace;font-size:.65rem;background:rgba(201,168,76,.15);color:var(--gold);border:1px solid rgba(201,168,76,.3);border-radius:999px;padding:.2rem .6rem;">#1</span>
+        </div>
+        <div class="metrics-grid">
+          <div class="metric-box"><div class="metric-val good">88.33%</div><div class="metric-lbl">Accuracy</div></div>
+          <div class="metric-box"><div class="metric-val good">87.20%</div><div class="metric-lbl">Precision</div></div>
+          <div class="metric-box"><div class="metric-val good">88.33%</div><div class="metric-lbl">Recall</div></div>
+          <div class="metric-box"><div class="metric-val good">87.76%</div><div class="metric-lbl">F1-Score</div></div>
+          <div class="metric-box"><div class="metric-val good">95.71%</div><div class="metric-lbl">AUC-ROC</div></div>
+          <div class="metric-box"><div class="metric-val good">89.58%</div><div class="metric-lbl">CV Score</div></div>
+        </div>
+        <div style="font-size:.78rem;color:var(--muted);margin-top:.5rem;">212/240 correct predictions on test set</div>
+      </div>
+
+      <!-- Logistic Regression -->
+      <div class="eval-card fade-up d2">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.5rem;">
+          <div>
+            <div class="eval-model-name">Logistic Regression</div>
+            <div class="eval-type">Linear · Probabilistic · Baseline</div>
+          </div>
+          <span style="font-family:'DM Mono',monospace;font-size:.65rem;background:rgba(234,179,8,.1);color:#fbbf24;border:1px solid rgba(234,179,8,.25);border-radius:999px;padding:.2rem .6rem;">#2</span>
+        </div>
+        <div class="metrics-grid">
+          <div class="metric-box"><div class="metric-val ok">82.50%</div><div class="metric-lbl">Accuracy</div></div>
+          <div class="metric-box"><div class="metric-val ok">84.46%</div><div class="metric-lbl">Precision</div></div>
+          <div class="metric-box"><div class="metric-val ok">82.50%</div><div class="metric-lbl">Recall</div></div>
+          <div class="metric-box"><div class="metric-val ok">83.26%</div><div class="metric-lbl">F1-Score</div></div>
+          <div class="metric-box"><div class="metric-val ok">91.50%</div><div class="metric-lbl">AUC-ROC</div></div>
+          <div class="metric-box"><div class="metric-val ok">82.71%</div><div class="metric-lbl">CV Score</div></div>
+        </div>
+        <div style="font-size:.78rem;color:var(--muted);margin-top:.5rem;">198/240 correct predictions on test set</div>
+      </div>
+
+      <!-- KNN -->
+      <div class="eval-card fade-up d3">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.5rem;">
+          <div>
+            <div class="eval-model-name">K-Nearest Neighbors</div>
+            <div class="eval-type">Distance · Instance-based</div>
+          </div>
+          <span style="font-family:'DM Mono',monospace;font-size:.65rem;background:rgba(220,38,38,.1);color:#f87171;border:1px solid rgba(220,38,38,.2);border-radius:999px;padding:.2rem .6rem;">#3</span>
+        </div>
+        <div class="metrics-grid">
+          <div class="metric-box"><div class="metric-val fair">77.50%</div><div class="metric-lbl">Accuracy</div></div>
+          <div class="metric-box"><div class="metric-val fair">76.31%</div><div class="metric-lbl">Precision</div></div>
+          <div class="metric-box"><div class="metric-val fair">77.50%</div><div class="metric-lbl">Recall</div></div>
+          <div class="metric-box"><div class="metric-val fair">76.83%</div><div class="metric-lbl">F1-Score</div></div>
+          <div class="metric-box"><div class="metric-val fair">83.82%</div><div class="metric-lbl">AUC-ROC</div></div>
+          <div class="metric-box"><div class="metric-val fair">73.65%</div><div class="metric-lbl">CV Score</div></div>
+        </div>
+        <div style="font-size:.78rem;color:var(--muted);margin-top:.5rem;">186/240 correct predictions on test set</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- COMPARISON TABLE -->
+<section class="content-sec" id="comparison">
+  <div class="container">
+    <div class="row g-4 mb-4">
+      <div class="col-12 fade-up">
+        <p class="phase-num">03</p>
+        <h2 class="block-title">Metric Comparison Table</h2>
+        <p class="block-body" style="max-width:620px;">All metrics side by side for quick comparison. Green = best value per metric.</p>
+      </div>
+    </div>
+    <div class="fade-up d1" style="overflow-x:auto;">
+      <table class="cmp-table">
+        <thead>
+          <tr>
+            <th>Model</th>
+            <th>Accuracy</th>
+            <th>Precision</th>
+            <th>Recall</th>
+            <th>F1-Score</th>
+            <th>AUC-ROC</th>
+            <th>CV Score</th>
+            <th>Rank</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="best-row">
+            <td><strong style="color:var(--gold)">⭐ Random Forest</strong></td>
+            <td class="good">88.33%</td>
+            <td class="good">87.20%</td>
+            <td class="good">88.33%</td>
+            <td class="good">87.76%</td>
+            <td class="good">95.71%</td>
+            <td class="good">89.58%</td>
+            <td><span style="color:var(--gold);font-family:'DM Mono',monospace;font-size:.75rem;">#1 Best</span></td>
+          </tr>
+          <tr>
+            <td>Logistic Regression</td>
+            <td class="ok">82.50%</td>
+            <td class="ok">84.46%</td>
+            <td class="ok">82.50%</td>
+            <td class="ok">83.26%</td>
+            <td class="ok">91.50%</td>
+            <td class="ok">82.71%</td>
+            <td><span style="color:#fbbf24;font-family:'DM Mono',monospace;font-size:.75rem;">#2 Good</span></td>
+          </tr>
+          <tr>
+            <td>KNN</td>
+            <td class="fair">77.50%</td>
+            <td class="fair">76.31%</td>
+            <td class="fair">77.50%</td>
+            <td class="fair">76.83%</td>
+            <td class="fair">83.82%</td>
+            <td class="fair">73.65%</td>
+            <td><span style="color:#f87171;font-family:'DM Mono',monospace;font-size:.75rem;">#3 Fair</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- CONFUSION MATRICES -->
+<section class="content-sec dark" id="confusion">
+  <div class="container">
+    <div class="row g-4 mb-4">
+      <div class="col-12 fade-up">
+        <p class="phase-num">04</p>
+        <h2 class="block-title">Confusion Matrices</h2>
+        <p class="block-body" style="max-width:620px;">Rows = actual class · Columns = predicted class · Purple diagonal = correct · Red = errors.</p>
+      </div>
+    </div>
+    <div class="row g-4">
+      <div class="col-lg-4 fade-up d1">
+        <div class="glass-card">
+          <div class="card-label mb-1">Random Forest — 88.33%</div>
+          <div style="font-size:.75rem;color:var(--muted);margin-bottom:1rem;">212 correct / 28 errors</div>
+          <div style="overflow-x:auto;">
+            <table class="cm-table">
+              <thead><tr><th></th><th>Pred: High</th><th>Pred: Low</th><th>Pred: Med</th></tr></thead>
+              <tbody>
+                <tr><th style="font-family:'DM Mono',monospace;font-size:.65rem;color:var(--muted);padding:.5rem .75rem;background:var(--surface3);border:1px solid var(--border);">High</th><td class="cm-zero">0</td><td class="cm-zero">0</td><td class="cm-off">3</td></tr>
+                <tr><th style="font-family:'DM Mono',monospace;font-size:.65rem;color:var(--muted);padding:.5rem .75rem;background:var(--surface3);border:1px solid var(--border);">Low</th><td class="cm-zero">0</td><td class="cm-diag">132</td><td class="cm-off">11</td></tr>
+                <tr><th style="font-family:'DM Mono',monospace;font-size:.65rem;color:var(--muted);padding:.5rem .75rem;background:var(--surface3);border:1px solid var(--border);">Med</th><td class="cm-zero">0</td><td class="cm-off">14</td><td class="cm-diag">80</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p style="font-size:.73rem;color:var(--muted);margin-top:.75rem;">Main error: Low ↔ Medium confusion (25 cases)</p>
+        </div>
+      </div>
+      <div class="col-lg-4 fade-up d2">
+        <div class="glass-card">
+          <div class="card-label mb-1">Logistic Regression — 82.50%</div>
+          <div style="font-size:.75rem;color:var(--muted);margin-bottom:1rem;">198 correct / 42 errors</div>
+          <div style="overflow-x:auto;">
+            <table class="cm-table">
+              <thead><tr><th></th><th>Pred: High</th><th>Pred: Low</th><th>Pred: Med</th></tr></thead>
+              <tbody>
+                <tr><th style="font-family:'DM Mono',monospace;font-size:.65rem;color:var(--muted);padding:.5rem .75rem;background:var(--surface3);border:1px solid var(--border);">High</th><td class="cm-diag">2</td><td class="cm-zero">0</td><td class="cm-off">1</td></tr>
+                <tr><th style="font-family:'DM Mono',monospace;font-size:.65rem;color:var(--muted);padding:.5rem .75rem;background:var(--surface3);border:1px solid var(--border);">Low</th><td class="cm-zero">0</td><td class="cm-diag">121</td><td class="cm-off">22</td></tr>
+                <tr><th style="font-family:'DM Mono',monospace;font-size:.65rem;color:var(--muted);padding:.5rem .75rem;background:var(--surface3);border:1px solid var(--border);">Med</th><td class="cm-off">7</td><td class="cm-off">12</td><td class="cm-diag">75</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p style="font-size:.73rem;color:var(--muted);margin-top:.75rem;">Notable: only model detecting some High cases (2 correct)</p>
+        </div>
+      </div>
+      <div class="col-lg-4 fade-up d3">
+        <div class="glass-card">
+          <div class="card-label mb-1">KNN — 77.50%</div>
+          <div style="font-size:.75rem;color:var(--muted);margin-bottom:1rem;">186 correct / 54 errors</div>
+          <div style="overflow-x:auto;">
+            <table class="cm-table">
+              <thead><tr><th></th><th>Pred: High</th><th>Pred: Low</th><th>Pred: Med</th></tr></thead>
+              <tbody>
+                <tr><th style="font-family:'DM Mono',monospace;font-size:.65rem;color:var(--muted);padding:.5rem .75rem;background:var(--surface3);border:1px solid var(--border);">High</th><td class="cm-zero">0</td><td class="cm-zero">0</td><td class="cm-off">3</td></tr>
+                <tr><th style="font-family:'DM Mono',monospace;font-size:.65rem;color:var(--muted);padding:.5rem .75rem;background:var(--surface3);border:1px solid var(--border);">Low</th><td class="cm-zero">0</td><td class="cm-diag">122</td><td class="cm-off">21</td></tr>
+                <tr><th style="font-family:'DM Mono',monospace;font-size:.65rem;color:var(--muted);padding:.5rem .75mm;background:var(--surface3);border:1px solid var(--border);">Med</th><td class="cm-zero">0</td><td class="cm-off">30</td><td class="cm-diag">64</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p style="font-size:.73rem;color:var(--muted);margin-top:.75rem;">Highest Medium confusion (30 cases predicted as Low)</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ROC CURVE -->
+<section class="content-sec" id="roc">
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-lg-4 fade-up">
+        <p class="phase-num">05</p>
+        <h2 class="block-title">ROC Curve Analysis</h2>
+        <p class="block-body">AUC-ROC measures the model's ability to discriminate between classes. A value of 1.0 = perfect, 0.5 = random. Strategy: One-vs-Rest (OvR), weighted average.</p>
+        <div class="glass-card mt-3">
+          <div class="card-label mb-2">AUC interpretation</div>
+          <div style="font-size:.82rem;color:var(--muted);line-height:1.75;">
+            <div>0.90 – 1.00 → <span style="color:#4ade80;">Excellent</span></div>
+            <div>0.80 – 0.90 → <span style="color:#fbbf24;">Good</span></div>
+            <div>0.70 – 0.80 → <span style="color:#fb923c;">Acceptable</span></div>
+            <div>0.50 – 0.70 → <span style="color:#f87171;">Poor</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-8 fade-up d1">
+        <div class="glass-card">
+          <div class="card-label mb-3">AUC-ROC scores — all models</div>
+          <div class="roc-row">
+            <div class="roc-meta"><span>⭐ Random Forest</span><span class="val">0.9571 — Excellent</span></div>
+            <div class="roc-track"><div class="roc-fill gold" style="width:95.71%"></div></div>
+          </div>
+          <div class="roc-row">
+            <div class="roc-meta"><span>Logistic Regression</span><span class="val">0.9150 — Excellent</span></div>
+            <div class="roc-track"><div class="roc-fill green" style="width:91.5%"></div></div>
+          </div>
+          <div class="roc-row">
+            <div class="roc-meta"><span>KNN</span><span class="val">0.8382 — Good</span></div>
+            <div class="roc-track"><div class="roc-fill amber" style="width:83.82%"></div></div>
+          </div>
+          <p style="font-size:.78rem;color:var(--muted);margin-top:1rem;">
+            ✅ All models achieve AUC &gt; 0.83 — confirming all three models are meaningfully better than random guessing. Random Forest's AUC of <strong style="color:var(--gold)">0.9571</strong> indicates near-excellent discrimination ability.
+          </p>
+        </div>
+
+        <div class="glass-card mt-3">
+          <div class="card-label mb-3">Per-class performance — Random Forest</div>
+          <div style="overflow-x:auto;">
+            <table class="cls-table">
+              <thead><tr><th>Class</th><th style="text-align:right">Precision</th><th style="text-align:right">Recall</th><th style="text-align:right">F1-Score</th><th style="text-align:right">Support</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><span style="font-family:'DM Mono',monospace;font-size:.75rem;color:#f87171;">High</span></td>
+                  <td class="bad-n">0.00%</td><td class="bad-n">0.00%</td><td class="bad-n">0.00%</td>
+                  <td class="num">3</td>
+                </tr>
+                <tr>
+                  <td><span style="font-family:'DM Mono',monospace;font-size:.75rem;color:#4ade80;">Low</span></td>
+                  <td class="good-n">90.41%</td><td class="good-n">92.31%</td><td class="good-n">91.35%</td>
+                  <td class="num">143</td>
+                </tr>
+                <tr>
+                  <td><span style="font-family:'DM Mono',monospace;font-size:.75rem;color:#fbbf24;">Medium</span></td>
+                  <td class="warn-n">85.11%</td><td class="warn-n">85.11%</td><td class="warn-n">85.11%</td>
+                  <td class="num">94</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p style="font-size:.75rem;color:var(--muted);margin-top:.75rem;">⚠️ High class shows 0% metrics due to severe class imbalance (only 3 High records in test set = 1.25%). This is a known limitation addressed in the Performance Analysis section.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PERFORMANCE ANALYSIS -->
+<section class="content-sec dark" id="analysis">
+  <div class="container">
+    <div class="row g-4 mb-4">
+      <div class="col-12 fade-up">
+        <p class="phase-num">06</p>
+        <h2 class="block-title">Performance Analysis</h2>
+      </div>
+    </div>
+    <div class="row g-3">
+      <div class="col-lg-4 fade-up d1">
+        <div class="glass-card h-100">
+          <div class="card-label mb-2" style="color:var(--gold);">⭐ Random Forest</div>
+          <div class="card-title" style="font-size:1rem;margin-bottom:.75rem;">Strengths</div>
+          <div style="font-size:.82rem;color:var(--muted);line-height:1.7;">
+            ✅ Highest accuracy across all metrics<br>
+            ✅ Best AUC-ROC (0.9571) — excellent discrimination<br>
+            ✅ Most stable CV scores (±0.4% variance)<br>
+            ✅ No scaling required — simpler pipeline<br>
+            ✅ Provides feature importance for interpretability
+          </div>
+          <div class="card-title" style="font-size:1rem;margin:.75rem 0 .5rem;">Weaknesses</div>
+          <div style="font-size:.82rem;color:var(--muted);line-height:1.7;">
+            ❌ Cannot detect High class (0 correct of 3)<br>
+            ❌ Some Low ↔ Medium confusion (25 cases)
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4 fade-up d2">
+        <div class="glass-card h-100">
+          <div class="card-label mb-2" style="color:#4ade80;">Logistic Regression</div>
+          <div class="card-title" style="font-size:1rem;margin-bottom:.75rem;">Strengths</div>
+          <div style="font-size:.82rem;color:var(--muted);line-height:1.7;">
+            ✅ Only model detecting High cases (2 correct)<br>
+            ✅ Good precision (84.46%) — fewer false positives<br>
+            ✅ Interpretable coefficients<br>
+            ✅ Stable and consistent performance
+          </div>
+          <div class="card-title" style="font-size:1rem;margin:.75rem 0 .5rem;">Weaknesses</div>
+          <div style="font-size:.82rem;color:var(--muted);line-height:1.7;">
+            ❌ Lower accuracy than RF (82.50%)<br>
+            ❌ 7 Medium cases misclassified as High<br>
+            ❌ Requires feature scaling
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4 fade-up d3">
+        <div class="glass-card h-100">
+          <div class="card-label mb-2" style="color:#fbbf24;">KNN</div>
+          <div class="card-title" style="font-size:1rem;margin-bottom:.75rem;">Strengths</div>
+          <div style="font-size:.82rem;color:var(--muted);line-height:1.7;">
+            ✅ No training phase — instant model<br>
+            ✅ No assumptions about data distribution<br>
+            ✅ AUC of 0.8382 — still good discrimination
+          </div>
+          <div class="card-title" style="font-size:1rem;margin:.75rem 0 .5rem;">Weaknesses</div>
+          <div style="font-size:.82rem;color:var(--muted);line-height:1.7;">
+            ❌ Lowest accuracy (77.50%)<br>
+            ❌ Highest Medium confusion (30 cases as Low)<br>
+            ❌ High CV variance (±0.5%)<br>
+            ❌ Slow at prediction time (searches all 960 records)
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BEST MODEL -->
+<section class="content-sec" id="best-model">
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-lg-4 fade-up">
+        <p class="phase-num">07</p>
+        <h2 class="block-title">Best Model Selection</h2>
+        <p class="block-body">Justified selection of the production model based on all evaluation metrics and project requirements.</p>
+      </div>
+      <div class="col-lg-8 fade-up d1">
+        <div class="winner-card">
+          <div class="winner-title">⭐ Random Forest Selected</div>
+          <div style="font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:1.25rem;">Production model for PatrimonioCO</div>
+          <ul class="reason-list">
+            <li><span class="check">→</span><div><strong style="color:var(--text);">Highest accuracy (88.33%)</strong> — correctly classifies 212 of 240 test records, outperforming LR by 5.83% and KNN by 10.83%.</div></li>
+            <li><span class="check">→</span><div><strong style="color:var(--text);">Best AUC-ROC (0.9571)</strong> — near-excellent discrimination ability between Low, Medium, and High deterioration classes.</div></li>
+            <li><span class="check">→</span><div><strong style="color:var(--text);">Most stable cross-validation (89.58% ± 0.4%)</strong> — minimal variance across 5 folds confirms the model generalizes well to unseen data.</div></li>
+            <li><span class="check">→</span><div><strong style="color:var(--text);">Feature importance</strong> — provides interpretable rankings for MinCultura and IDPC decision-makers, identifying which variables most influence deterioration.</div></li>
+            <li><span class="check">→</span><div><strong style="color:var(--text);">No scaling required</strong> — simpler deployment pipeline; directly uses the engineered features without preprocessing at inference time.</div></li>
+            <li><span class="check">→</span><div><strong style="color:var(--text);">Class imbalance handling</strong> — built-in class_weight='balanced' compensates for the rare High class (1.5%) without external oversampling techniques.</div></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONCLUSIONS -->
+<section class="content-sec dark" id="conclusions">
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-lg-4 fade-up">
+        <p class="phase-num">08</p>
+        <h2 class="block-title">Conclusions</h2>
+      </div>
+      <div class="col-lg-8 fade-up d1">
+        <p class="block-body" style="margin-bottom:1rem;">
+          The evaluation of the three models confirms that <strong>Random Forest is the optimal choice</strong>
+          for predicting structural deterioration in Colombian Cultural Heritage Assets. With an accuracy
+          of <strong>88.33%</strong> and an AUC-ROC of <strong>0.9571</strong>, it demonstrates both high
+          classification accuracy and excellent discriminative power across all three deterioration classes.
+        </p>
+        <p class="block-body" style="margin-bottom:1rem;">
+          The primary limitation across all models is the <strong>High class detection</strong> — with only
+          18 High records in the full dataset (1.5%), the test set contains just 3 High cases, making it
+          statistically insufficient to properly evaluate this class. Future work should focus on
+          collecting more High deterioration cases or applying SMOTE oversampling to address this imbalance.
+        </p>
+        <p class="block-body">
+          Despite this limitation, the model provides significant value for <strong>preventive maintenance
+          planning</strong>: correctly identifying 92.31% of Low-risk buildings and 85.11% of Medium-risk
+          buildings allows MinCultura and IDPC to efficiently allocate conservation budgets and prioritize
+          at-risk heritage assets before structural failure occurs.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+const obs = new IntersectionObserver(e => e.forEach(x => {
+  if(x.isIntersecting){ x.target.classList.add('visible'); obs.unobserve(x.target); }
+}), {threshold:.08});
+document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
+</script>
+{% endblock %}

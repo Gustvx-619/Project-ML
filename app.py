@@ -35,6 +35,11 @@ def model_engineering():
     return render_template("model_engineering.html", metrics=metrics)
 
 
+@app.route('/model-evaluation')
+def model_evaluation():
+    return render_template("model_evaluation.html")
+
+
 @app.route('/heritage-application', methods=["GET", "POST"])
 def heritage_application():
     model_info = HeritageModel.get_heritage_info()
