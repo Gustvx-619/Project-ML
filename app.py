@@ -41,12 +41,22 @@ def model_evaluation():
 
 @app.route('/heritage-application', methods=["GET", "POST"])
 def heritage_application():
-    model_info = HeritageModel.get_heritage_info()
+    return redirect(url_for('prediction_system'))
+
+
+@app.route('/prediction-system', methods=["GET", "POST"])
+def prediction_system():
     prediction = None
-    form_data = {}
+    form_data  = {}
+    error      = None
 
     if request.method == "POST":
         try:
+            required = ["age", "material", "precipitation", "humidity", "pm10", "road_distance"]
+            for field in required:
+                if not request.form.get(field):
+                    raise ValueError(f"Field '{field}' is required")
+
             form_data = {
                 "age":           float(request.form.get("age")),
                 "material":      request.form.get("material"),
@@ -55,7 +65,15 @@ def heritage_application():
                 "pm10":          float(request.form.get("pm10")),
                 "road_distance": float(request.form.get("road_distance")),
             }
-            label, confidence = HeritageModel.predict_deterioration_risk(
+
+            if not (1 <= form_data["age"] <= 500):
+                raise ValueError("Structure age must be between 1 and 500 years")
+            if not (0 <= form_data["humidity"] <= 100):
+                raise ValueError("Humidity must be between 0 and 100%")
+            if form_data["road_distance"] <= 0:
+                raise ValueError("Road distance must be greater than 0")
+
+            label, confidence, probabilities = HeritageModel.predict_deterioration_risk(
                 age=form_data["age"],
                 material=form_data["material"],
                 precipitation=form_data["precipitation"],
@@ -63,15 +81,17 @@ def heritage_application():
                 pm10=form_data["pm10"],
                 road_distance=form_data["road_distance"]
             )
-            prediction = (label, confidence)
+            prediction = (label, confidence, probabilities)
+
+        except ValueError as ve:
+            error = str(ve)
         except Exception as e:
-            print("Error:", e)
-            prediction = "Error en los datos"
+            error = f"Unexpected error: {str(e)}"
 
     return render_template("heritage_application.html",
-                           model_info=model_info,
                            prediction=prediction,
-                           form_data=form_data)
+                           form_data=form_data,
+                           error=error)
 
 
 if __name__ == '__main__':
