@@ -285,4 +285,10 @@ def predict_deterioration_risk(age, material, precipitation,
     predicted_label  = label_encoder.inverse_transform([predicted_index])[0]
     confidence       = round(float(max(probabilities)) * 100, 1)
 
-    return predicted_label, confidence
+    # Build per-class probability dictionary
+    class_probs = {
+        label_encoder.inverse_transform([i])[0]: round(float(p) * 100, 1)
+        for i, p in enumerate(probabilities)
+    }
+
+    return predicted_label, confidence, class_probs
